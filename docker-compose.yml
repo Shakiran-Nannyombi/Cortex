@@ -1,0 +1,94 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: cortex
+      POSTGRES_PASSWORD: cortex
+      POSTGRES_DB: cortex
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cortex"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Flask Backend
+  backend:
+    build: ./backend
+    environment:
+      FLASK_ENV: development
+      DATABASE_URL: postgresql://cortex:cortex@db:5432/cortex
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+      SECRET_KEY: change-this-in-production
+      JWT_SECRET_KEY: change-this-in-production
+      UPLOAD_FOLDER: /app/uploads
+      CLOUD_PROVIDER: local
+      OCR_PROVIDER: tesseract
+      STORAGE_PROVIDER: local
+    volumes:
+      - upload_data:/app/uploads
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: >
+      bash -c "
+        flask --app wsgi:app db upgrade --directory app/migrations || true &&
+        flask --app wsgi:app db init --directory app/migrations || true &&
+        flask --app wsgi:app db migrate --directory app/migrations || true &&
+        flask --app wsgi:app db upgrade --directory app/migrations || true &&
+        python -c 'from app.create_app import create_app; from app.extensions import db; app=create_app(); app.app_context().push(); db.create_all(); print(\"Tables created\")' &&
+        gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 120 wsgi:app
+      "
+
+  # Celery Worker
+  worker:
+    build: ./backend
+    environment:
+      FLASK_ENV: development
+      DATABASE_URL: postgresql://cortex:cortex@db:5432/cortex
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+      UPLOAD_FOLDER: /app/uploads
+      OCR_PROVIDER: tesseract
+    volumes:
+      - upload_data:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: celery -A app.celery_app:make_celery worker --loglevel=info
+
+  # React Frontend
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  upload_data:
