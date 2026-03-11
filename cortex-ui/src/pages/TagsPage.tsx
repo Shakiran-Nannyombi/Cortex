@@ -31,7 +31,10 @@ export default function TagsPage() {
       setColor(COLORS[0]);
       toast.success('Tag created!');
     },
-    onError: (err: any) => toast.error(err.response?.data?.error || 'Failed'),
+    onError: (err: unknown) => {
+      const error = err as { response?: { data?: { error?: string } } };
+      toast.error(error.response?.data?.error || 'Failed');
+    },
   });
 
   const updateMutation = useMutation({
@@ -124,9 +127,8 @@ export default function TagsPage() {
                     key={c}
                     type="button"
                     onClick={() => setColor(c)}
-                    className={`w-8 h-8 rounded-full border-2 transition-all ${
-                      color === c ? 'border-gray-900 scale-110' : 'border-transparent'
-                    }`}
+                    className={`w-8 h-8 rounded-full border-2 transition-all ${color === c ? 'border-gray-900 scale-110' : 'border-transparent'
+                      }`}
                     style={{ backgroundColor: c }}
                   />
                 ))}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -13,7 +13,7 @@ export default function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (password.length < 8) {
       toast.error('Password must be at least 8 characters');
@@ -24,8 +24,9 @@ export default function RegisterPage() {
       await register(email, username, password, fullName);
       toast.success('Account created successfully!');
       navigate('/');
-    } catch (err: any) {
-      toast.error(err.response?.data?.error || 'Registration failed');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string } } };
+      toast.error(error.response?.data?.error || 'Registration failed');
     } finally {
       setLoading(false);
     }

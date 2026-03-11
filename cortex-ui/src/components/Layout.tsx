@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import {
   FileText,
   FolderOpen,
@@ -9,6 +9,8 @@ import {
   LogOut,
   Menu,
   X,
+  Key,
+  Settings,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -29,6 +31,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { path: '/workspaces', icon: FolderOpen, label: 'Workspaces' },
     { path: '/search', icon: Search, label: 'Search' },
     { path: '/tags', icon: Tags, label: 'Tags' },
+    { path: '/api-keys', icon: Key, label: 'API Keys' },
+    { path: '/settings', icon: Settings, label: 'Settings' },
   ];
 
   return (
@@ -43,9 +47,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform lg:transform-none ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        }`}
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform lg:transform-none ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          }`}
       >
         <div className="h-full flex flex-col">
           <div className="p-4 border-b border-gray-200 flex items-center justify-between">
@@ -69,11 +72,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   key={item.path}
                   to={item.path}
                   onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                  }`}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive
+                    ? 'bg-blue-50 text-blue-700'
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    }`}
                 >
                   <item.icon className="w-5 h-5" />
                   {item.label}

@@ -1,15 +1,21 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContextProvider';
+import { ThemeProvider } from './context/ThemeContextProvider';
+import { useAuth } from './hooks/useAuth';
+import ErrorBoundary from './components/ErrorBoundary';
 import Layout from './components/Layout';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import LandingPage from './pages/LandingPage';
 import DashboardPage from './pages/DashboardPage';
 import DocumentsPage from './pages/DocumentsPage';
 import WorkspacesPage from './pages/WorkspacesPage';
 import SearchPage from './pages/SearchPage';
 import TagsPage from './pages/TagsPage';
+import APIKeysPage from './pages/APIKeysPage';
+import SettingsPage from './pages/SettingsPage';
 import { Loader2 } from 'lucide-react';
 
 const queryClient = new QueryClient({
@@ -45,10 +51,11 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 function AppRoutes() {
   return (
     <Routes>
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
       <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
       <Route
-        path="/"
+        path="/dashboard"
         element={
           <ProtectedRoute>
             <Layout><DashboardPage /></Layout>
@@ -87,20 +94,40 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/api-keys"
+        element={
+          <ProtectedRoute>
+            <Layout><APIKeysPage /></Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <Layout><SettingsPage /></Layout>
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider>
-          <AppRoutes />
-          <Toaster position="top-right" />
-        </AuthProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <ThemeProvider>
+            <AuthProvider>
+              <AppRoutes />
+              <Toaster position="top-right" />
+            </AuthProvider>
+          </ThemeProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

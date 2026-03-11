@@ -63,8 +63,9 @@ export default function DocumentsPage() {
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       toast.success('Document uploaded!');
     },
-    onError: (err: any) => {
-      toast.error(err.response?.data?.error || 'Upload failed');
+    onError: (err: unknown) => {
+      const error = err as { response?: { data?: { error?: string } } };
+      toast.error(error.response?.data?.error || 'Upload failed');
     },
   });
 
@@ -113,11 +114,10 @@ export default function DocumentsPage() {
       {/* Upload Zone */}
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
-          isDragActive
-            ? 'border-blue-400 bg-blue-50'
-            : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
-        }`}
+        className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${isDragActive
+          ? 'border-blue-400 bg-blue-50'
+          : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
+          }`}
       >
         <input {...getInputProps()} />
         <Upload className="w-10 h-10 text-gray-400 mx-auto mb-3" />
@@ -149,9 +149,8 @@ export default function DocumentsPage() {
                 {data?.documents.map((doc) => (
                   <div
                     key={doc.id}
-                    className={`p-4 flex items-center gap-4 hover:bg-gray-50 cursor-pointer transition-colors ${
-                      selectedDoc?.id === doc.id ? 'bg-blue-50' : ''
-                    }`}
+                    className={`p-4 flex items-center gap-4 hover:bg-gray-50 cursor-pointer transition-colors ${selectedDoc?.id === doc.id ? 'bg-blue-50' : ''
+                      }`}
                     onClick={() => setSelectedDoc(selectedDoc?.id === doc.id ? null : doc)}
                   >
                     <FileText className="w-8 h-8 text-gray-400 shrink-0" />
