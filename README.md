@@ -17,7 +17,7 @@ A cloud-agnostic document processing platform (upload → OCR → search → org
 
 ## Architecture
 
-```
+```bash
 Frontend (React + TypeScript + Vite)
     ↓
 Backend API (Flask + Python)
@@ -30,6 +30,7 @@ Cloud Services (GCP/AWS/Azure) or Local Services
 ### Technology Stack
 
 **Backend:**
+
 - Python 3.11+ with Flask
 - SQLAlchemy + Alembic for database
 - Celery for async processing
@@ -38,6 +39,7 @@ Cloud Services (GCP/AWS/Azure) or Local Services
 - PyPDF2, python-docx, Pillow, pytesseract for document processing
 
 **Frontend:**
+
 - React 18 with TypeScript
 - Vite for build tooling
 - TanStack Query for data fetching
@@ -46,6 +48,7 @@ Cloud Services (GCP/AWS/Azure) or Local Services
 - Lucide React for icons
 
 **Infrastructure:**
+
 - Docker & Docker Compose
 - PostgreSQL database
 - Redis for caching/queuing
@@ -62,32 +65,48 @@ Cloud Services (GCP/AWS/Azure) or Local Services
 ### Local Development with Docker Compose
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/Shakiran-Nannyombi/Cortex.git
 cd Cortex
 ```
 
-2. Start all services:
+1. Start all services:
+
 ```bash
 docker compose up --build
 ```
 
-3. Access the application:
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:5000/api/health
+1. Access the application:
+   - Frontend: <http://localhost:3000>
+   - Backend API: <http://localhost:5000/api/health>
 
 ### Local Development (without Docker)
 
 **Backend:**
+
 ```bash
 cd backend
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
-python wsgi.py
+
+# Start database services (PostgreSQL & Redis)
+cd .. && docker compose up db redis -d && cd backend
+
+# Run migrations
+flask db init
+flask db migrate -m "Initial migration"
+flask db upgrade
+
+# Start development server
+flask run --host=0.0.0.0 --port=5000
 ```
 
+> **Note:** For detailed backend setup instructions, troubleshooting, and common issues, see [backend/README.md](backend/README.md)
+
 **Frontend:**
+
 ```bash
 cd frontend
 npm install
@@ -143,7 +162,7 @@ python -m pytest tests/ -v
 
 ## Project Structure
 
-```
+```bashsource venv/bin/activate
 Cortex/
 ├── backend/
 │   ├── app/
@@ -173,4 +192,3 @@ Cortex/
 ## License
 
 See [LICENSE](LICENSE) file.
-
