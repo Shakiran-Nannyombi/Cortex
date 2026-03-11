@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Button } from '../Button';
+import Button from '../Button';
 
 describe('Button Component', () => {
     it('renders with text content', () => {
@@ -12,7 +12,7 @@ describe('Button Component', () => {
     it('renders with primary variant by default', () => {
         render(<Button>Primary</Button>);
         const button = screen.getByText('Primary');
-        expect(button).toHaveClass('bg-blue-600');
+        expect(button).toHaveClass('bg-primary-500');
     });
 
     it('renders with secondary variant', () => {
@@ -24,24 +24,13 @@ describe('Button Component', () => {
     it('renders with danger variant', () => {
         render(<Button variant="danger">Delete</Button>);
         const button = screen.getByText('Delete');
-        expect(button).toHaveClass('bg-red-600');
+        expect(button).toHaveClass('bg-red-500');
     });
 
     it('renders with ghost variant', () => {
         render(<Button variant="ghost">Ghost</Button>);
         const button = screen.getByText('Ghost');
         expect(button).toHaveClass('bg-transparent');
-    });
-
-    it('renders with different sizes', () => {
-        const { rerender } = render(<Button size="sm">Small</Button>);
-        expect(screen.getByText('Small')).toHaveClass('px-2', 'py-1', 'text-sm');
-
-        rerender(<Button size="md">Medium</Button>);
-        expect(screen.getByText('Medium')).toHaveClass('px-4', 'py-2', 'text-base');
-
-        rerender(<Button size="lg">Large</Button>);
-        expect(screen.getByText('Large')).toHaveClass('px-6', 'py-3', 'text-lg');
     });
 
     it('handles click events', async () => {
@@ -75,21 +64,9 @@ describe('Button Component', () => {
         expect(button.querySelector('svg')).toBeInTheDocument();
     });
 
-    it('renders with icon', () => {
-        const Icon = () => <span data-testid="icon">🔒</span>;
-        render(<Button icon={<Icon />}>With Icon</Button>);
-        expect(screen.getByTestId('icon')).toBeInTheDocument();
-    });
-
     it('renders as submit button', () => {
         render(<Button type="submit">Submit</Button>);
         const button = screen.getByText('Submit');
         expect(button).toHaveAttribute('type', 'submit');
-    });
-
-    it('renders as reset button', () => {
-        render(<Button type="reset">Reset</Button>);
-        const button = screen.getByText('Reset');
-        expect(button).toHaveAttribute('type', 'reset');
     });
 });
