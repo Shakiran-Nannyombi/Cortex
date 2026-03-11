@@ -47,7 +47,7 @@ The lack of an effective document processing solution leads to:
 
 ### Core Problem
 
-**"How can organizations efficiently process, organize, and search diverse document types across multiple deployment environments without vendor lock-in, while making text content universally accessible and searchable?"**
+"How can organizations efficiently process, organize, and search diverse document types across multiple deployment environments without vendor lock-in, while making text content universally accessible and searchable?"
 
 ### Sub-Problems
 

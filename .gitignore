@@ -57,3 +57,6 @@ uploads/
 *.tfstate
 *.tfstate.backup
 *.tfvars
+
+stitch/
+.kiro/
