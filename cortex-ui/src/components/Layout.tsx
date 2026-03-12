@@ -40,7 +40,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className={`min-h-screen ${isDark ? 'dark bg-gray-900' : 'bg-gray-50'} flex`}>
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -51,18 +51,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform lg:transform-none ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-r transform transition-transform lg:transform-none ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
           }`}
       >
         <div className="h-full flex flex-col">
-          <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+          <div className={`p-4 border-b ${isDark ? 'border-gray-700' : 'border-gray-200'} flex items-center justify-between`}>
             <Link to="/" className="flex items-center gap-2">
               <FileText className="w-8 h-8 text-blue-600" />
-              <span className="text-xl font-bold text-gray-900">Cortex</span>
+              <span className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Cortex</span>
             </Link>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-1 text-gray-500 hover:text-gray-700"
+              className={`lg:hidden p-1 ${isDark ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'}`}
             >
               <X className="w-5 h-5" />
             </button>
@@ -77,8 +77,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   to={item.path}
                   onClick={() => setSidebarOpen(false)}
                   className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive
-                    ? 'bg-blue-50 text-blue-700'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    ? isDark ? 'bg-blue-900 text-blue-300' : 'bg-blue-50 text-blue-700'
+                    : isDark ? 'text-gray-400 hover:bg-gray-700 hover:text-gray-300' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                     }`}
                 >
                   <item.icon className="w-5 h-5" />
@@ -88,7 +88,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             })}
           </nav>
 
-          <div className="p-4 border-t border-gray-200">
+          <div className={`p-4 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
             <div className="flex items-center justify-between gap-2 mb-4">
               <button
                 onClick={toggleTheme}
@@ -101,10 +101,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
             <div className="flex items-center justify-between">
               <div className="truncate">
-                <p className="text-sm font-medium text-gray-900 truncate">
+                <p className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-900'} truncate`}>
                   {user?.full_name || user?.username}
                 </p>
-                <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'} truncate`}>{user?.email}</p>
               </div>
               <button
                 onClick={handleLogout}
@@ -120,17 +120,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="bg-white border-b border-gray-200 px-4 py-3 lg:hidden flex items-center gap-3">
+        <header className={`${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b px-4 py-3 lg:hidden flex items-center gap-3`}>
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-1 text-gray-500 hover:text-gray-700"
+            className={`p-1 ${isDark ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'}`}
           >
             <Menu className="w-6 h-6" />
           </button>
-          <span className="font-bold text-gray-900">Cortex</span>
+          <span className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Cortex</span>
         </header>
 
-        <main className="flex-1 p-4 lg:p-6 overflow-auto">{children}</main>
+        <main className={`flex-1 p-4 lg:p-6 overflow-auto ${isDark ? 'bg-gray-900 text-gray-100' : 'bg-gray-50'}`}>{children}</main>
       </div>
     </div>
   );

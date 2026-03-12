@@ -76,19 +76,19 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="bg-white rounded-xl border border-gray-200 p-5"
+            className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">{stat.label}</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{stat.value}</p>
               </div>
               <div className={`p-3 rounded-lg ${stat.color}`}>
                 <stat.icon className="w-6 h-6" />
@@ -101,8 +101,8 @@ export default function DashboardPage() {
       {/* Status Breakdown & Recent Documents */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Status Breakdown */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Processing Status
           </h2>
           <div className="space-y-3">
@@ -110,20 +110,20 @@ export default function DashboardPage() {
               <div key={status} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <StatusIcon status={status} />
-                  <span className="text-sm text-gray-700 capitalize">{status}</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300 capitalize">{status}</span>
                 </div>
-                <span className="text-sm font-medium text-gray-900">{count}</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">{count}</span>
               </div>
             ))}
             {Object.keys(data?.status_breakdown ?? {}).length === 0 && (
-              <p className="text-sm text-gray-400">No documents yet</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500">No documents yet</p>
             )}
           </div>
         </div>
 
         {/* Recent Documents */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Recent Documents
           </h2>
           <div className="space-y-3">
@@ -132,21 +132,21 @@ export default function DashboardPage() {
                 <div className="flex items-center gap-3 min-w-0">
                   <StatusIcon status={doc.status} />
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                       {doc.title}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
                       {new Date(doc.created_at).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
-                <span className="text-xs text-gray-400 ml-2 whitespace-nowrap">
+                <span className="text-xs text-gray-400 dark:text-gray-500 ml-2 whitespace-nowrap">
                   {formatBytes(doc.file_size)}
                 </span>
               </div>
             ))}
             {(data?.recent_documents ?? []).length === 0 && (
-              <p className="text-sm text-gray-400">No documents yet</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500">No documents yet</p>
             )}
           </div>
         </div>
@@ -154,13 +154,13 @@ export default function DashboardPage() {
 
       {/* File Type Breakdown */}
       {Object.keys(data?.type_breakdown ?? {}).length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">File Types</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">File Types</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {Object.entries(data?.type_breakdown ?? {}).map(([type, count]) => (
-              <div key={type} className="bg-gray-50 rounded-lg p-3 text-center">
-                <p className="text-lg font-bold text-gray-900">{count}</p>
-                <p className="text-xs text-gray-500 truncate">{type.split('/')[1] || type}</p>
+              <div key={type} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
+                <p className="text-lg font-bold text-gray-900 dark:text-white">{count}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{type.split('/')[1] || type}</p>
               </div>
             ))}
           </div>
