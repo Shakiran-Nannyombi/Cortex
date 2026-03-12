@@ -1,4 +1,5 @@
-import { ReactNode, useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 interface DropdownMenuProps {
@@ -54,8 +55,8 @@ export default function DropdownMenu({
                                 setIsOpen(false);
                             }}
                             className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${item.variant === 'danger'
-                                    ? 'text-red-600 dark:text-red-400'
-                                    : 'text-gray-700 dark:text-gray-300'
+                                ? 'text-red-600 dark:text-red-400'
+                                : 'text-gray-700 dark:text-gray-300'
                                 }`}
                         >
                             {item.icon}

@@ -1,4 +1,5 @@
-import { forwardRef, SelectHTMLAttributes } from 'react';
+import { forwardRef } from 'react';
+import type { SelectHTMLAttributes } from 'react';
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
     label?: string;
@@ -20,8 +21,8 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
                 <select
                     ref={ref}
                     className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors ${error
-                            ? 'border-red-500 focus:ring-red-500'
-                            : 'border-gray-300 dark:border-gray-600'
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 dark:border-gray-600'
                         } ${className}`}
                     {...props}
                 >

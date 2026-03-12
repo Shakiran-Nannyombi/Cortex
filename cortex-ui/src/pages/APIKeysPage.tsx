@@ -20,7 +20,7 @@ interface CreateAPIKeyResponse {
 const apiKeysApi = {
     list: () => Promise.resolve({ data: { apiKeys: [] as APIKey[] } }),
     create: (data: { name: string }) => Promise.resolve({ data: { apiKey: { id: '1', name: data.name, keyPreview: '****', createdAt: new Date().toISOString(), isRevoked: false }, keyValue: 'sk_test_' + Math.random().toString(36).substr(2, 9) } as CreateAPIKeyResponse }),
-    revoke: () => Promise.resolve({ data: {} }),
+    revoke: (_id: string) => Promise.resolve({ data: {} }),
 };
 
 export default function APIKeysPage() {
