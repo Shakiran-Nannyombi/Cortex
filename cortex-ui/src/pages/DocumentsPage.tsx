@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useDropzone } from 'react-dropzone';
 import { documentsApi } from '../api/endpoints';
+import { useTheme } from '../hooks/useTheme';
 import {
   Upload,
   FileText,
@@ -43,6 +44,7 @@ function formatBytes(bytes: number): string {
 
 export default function DocumentsPage() {
   const queryClient = useQueryClient();
+  const { isDark } = useTheme();
   const [page, setPage] = useState(1);
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
 
@@ -108,25 +110,25 @@ export default function DocumentsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Documents</h1>
+        <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Documents</h1>
       </div>
 
       {/* Upload Zone */}
       <div
         {...getRootProps()}
         className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${isDragActive
-          ? 'border-blue-400 bg-blue-50'
-          : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
+          ? isDark ? 'border-blue-400 bg-blue-900/20' : 'border-blue-400 bg-blue-50'
+          : isDark ? 'border-gray-600 hover:border-blue-400 hover:bg-gray-800' : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
           }`}
       >
         <input {...getInputProps()} />
-        <Upload className="w-10 h-10 text-gray-400 mx-auto mb-3" />
-        <p className="text-sm text-gray-600">
+        <Upload className={`w-10 h-10 mx-auto mb-3 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
+        <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
           {isDragActive
             ? 'Drop files here...'
             : 'Drag & drop files here, or click to browse'}
         </p>
-        <p className="text-xs text-gray-400 mt-1">
+        <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
           PDF, DOCX, TXT, PNG, JPG, GIF (max 50MB)
         </p>
       </div>
@@ -138,27 +140,29 @@ export default function DocumentsPage() {
         </div>
       ) : (
         <>
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className={`rounded-xl border overflow-hidden ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
             {(data?.documents ?? []).length === 0 ? (
-              <div className="p-8 text-center text-gray-400">
+              <div className={`p-8 text-center ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
                 <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>No documents yet. Upload your first document above.</p>
               </div>
             ) : (
-              <div className="divide-y divide-gray-100">
+              <div className={`divide-y ${isDark ? 'divide-gray-700' : 'divide-gray-100'}`}>
                 {data?.documents.map((doc) => (
                   <div
                     key={doc.id}
-                    className={`p-4 flex items-center gap-4 hover:bg-gray-50 cursor-pointer transition-colors ${selectedDoc?.id === doc.id ? 'bg-blue-50' : ''
+                    className={`p-4 flex items-center gap-4 cursor-pointer transition-colors ${selectedDoc?.id === doc.id
+                      ? isDark ? 'bg-blue-900/30' : 'bg-blue-50'
+                      : isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
                       }`}
                     onClick={() => setSelectedDoc(selectedDoc?.id === doc.id ? null : doc)}
                   >
-                    <FileText className="w-8 h-8 text-gray-400 shrink-0" />
+                    <FileText className={`w-8 h-8 shrink-0 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className={`text-sm font-medium truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
                         {doc.title}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                         {formatBytes(doc.file_size)} • {new Date(doc.created_at).toLocaleDateString()}
                       </p>
                     </div>
@@ -169,7 +173,7 @@ export default function DocumentsPage() {
                           {doc.tags.slice(0, 2).map((tag) => (
                             <span
                               key={tag.id}
-                              className="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-600"
+                              className={`px-2 py-0.5 text-xs rounded-full ${isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}`}
                               style={{ borderLeft: `3px solid ${tag.color}` }}
                             >
                               {tag.name}
@@ -186,11 +190,11 @@ export default function DocumentsPage() {
 
           {/* Selected Document Detail */}
           {selectedDoc && (
-            <div className="bg-white rounded-xl border border-gray-200 p-5">
+            <div className={`rounded-xl border p-5 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{selectedDoc.title}</h3>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{selectedDoc.title}</h3>
+                  <p className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                     {selectedDoc.filename} • {formatBytes(selectedDoc.file_size)} • {selectedDoc.mime_type}
                   </p>
                 </div>
@@ -198,7 +202,7 @@ export default function DocumentsPage() {
                   {selectedDoc.status === 'failed' && (
                     <button
                       onClick={() => reprocessMutation.mutate(selectedDoc.id)}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                      className={`p-2 rounded-lg ${isDark ? 'text-blue-400 hover:bg-gray-700' : 'text-blue-600 hover:bg-blue-50'}`}
                       title="Reprocess"
                     >
                       <RefreshCw className="w-5 h-5" />
@@ -206,7 +210,7 @@ export default function DocumentsPage() {
                   )}
                   <button
                     onClick={() => deleteMutation.mutate(selectedDoc.id)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                    className={`p-2 rounded-lg ${isDark ? 'text-red-400 hover:bg-gray-700' : 'text-red-600 hover:bg-red-50'}`}
                     title="Delete"
                   >
                     <Trash2 className="w-5 h-5" />
@@ -214,15 +218,15 @@ export default function DocumentsPage() {
                 </div>
               </div>
               {selectedDoc.content_preview && (
-                <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-500 mb-1">Content Preview</p>
-                  <p className="text-sm text-gray-700 whitespace-pre-line">{selectedDoc.content_preview}</p>
+                <div className={`mt-4 p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                  <p className={`text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Content Preview</p>
+                  <p className={`text-sm whitespace-pre-line ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{selectedDoc.content_preview}</p>
                 </div>
               )}
               {selectedDoc.error_message && (
-                <div className="mt-4 p-3 bg-red-50 rounded-lg">
-                  <p className="text-xs text-red-500 mb-1">Error</p>
-                  <p className="text-sm text-red-700">{selectedDoc.error_message}</p>
+                <div className={`mt-4 p-3 rounded-lg ${isDark ? 'bg-red-900/20' : 'bg-red-50'}`}>
+                  <p className={`text-xs mb-1 ${isDark ? 'text-red-400' : 'text-red-500'}`}>Error</p>
+                  <p className={`text-sm ${isDark ? 'text-red-300' : 'text-red-700'}`}>{selectedDoc.error_message}</p>
                 </div>
               )}
             </div>
@@ -231,21 +235,21 @@ export default function DocumentsPage() {
           {/* Pagination */}
           {(data?.pages ?? 0) > 1 && (
             <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">
+              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                 Page {data?.page} of {data?.pages} ({data?.total} documents)
               </p>
               <div className="flex gap-2">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
+                  className={`p-2 border rounded-lg disabled:opacity-50 ${isDark ? 'border-gray-700 hover:bg-gray-700' : 'border-gray-300 hover:bg-gray-50'}`}
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setPage((p) => p + 1)}
                   disabled={page >= (data?.pages ?? 1)}
-                  className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-50"
+                  className={`p-2 border rounded-lg disabled:opacity-50 ${isDark ? 'border-gray-700 hover:bg-gray-700' : 'border-gray-300 hover:bg-gray-50'}`}
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
