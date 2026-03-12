@@ -3,6 +3,10 @@ import { cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { server } from './mocks/server';
 
+declare global {
+    var localStorage: Storage;
+}
+
 // Establish API mocking before all tests
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 
@@ -23,7 +27,7 @@ const localStorageMock = {
     removeItem: vi.fn(),
     clear: vi.fn(),
 };
-global.localStorage = localStorageMock as any;
+globalThis.localStorage = localStorageMock as any;
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
