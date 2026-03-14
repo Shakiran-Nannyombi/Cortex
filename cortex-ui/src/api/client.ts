@@ -11,8 +11,6 @@ const api = axios.create({
   timeout: 5000, // 5 second timeout
 });
 
-let useFallback = false;
-
 // Request interceptor to add auth token
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('access_token');
@@ -29,7 +27,6 @@ api.interceptors.response.use(
     // If backend is unavailable, use mock API
     if (error.code === 'ECONNABORTED' || error.code === 'ENOTFOUND' || error.message === 'Network Error') {
       console.warn('Backend unavailable, using mock API for demo');
-      useFallback = true;
       return Promise.reject(error);
     }
 
