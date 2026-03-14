@@ -1,0 +1,3 @@
+# This file is required by Heroku
+# The actual dependencies are in backend/requirements.txt
+# Heroku will use the Procfile to run the app from the backend directory
