@@ -10,13 +10,18 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Database
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        "DATABASE_URL", "postgresql://cortex:cortex@localhost:5432/cortex"
-    )
+    @staticmethod
+    def get_database_url():
+        """Get database URL with proper handling for different environments."""
+        db_url = os.environ.get("DATABASE_URL", "postgresql://cortex:cortex@localhost:5432/cortex")
+        
+        # Handle Render's postgres:// to postgresql:// conversion
+        if db_url and db_url.startswith("postgres://"):
+            db_url = db_url.replace("postgres://", "postgresql://", 1)
+        
+        return db_url
     
-    # Handle Render's postgres:// to postgresql:// conversion
-    if SQLALCHEMY_DATABASE_URI and SQLALCHEMY_DATABASE_URI.startswith("postgres://"):
-        SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace("postgres://", "postgresql://", 1)
+    SQLALCHEMY_DATABASE_URI = get_database_url.__func__()
 
     # JWT
     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", SECRET_KEY)

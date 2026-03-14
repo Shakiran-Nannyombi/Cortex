@@ -49,4 +49,11 @@ def create_app(config_name=None):
     # Import models for migration support
     from app import models  # noqa: F401
 
+    # Create tables if they don't exist (for first run)
+    with app.app_context():
+        try:
+            db.create_all()
+        except Exception as e:
+            print(f"Warning: Could not create tables: {e}")
+
     return app
