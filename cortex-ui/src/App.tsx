@@ -17,6 +17,7 @@ import TagsPage from './pages/TagsPage';
 import APIKeysPage from './pages/APIKeysPage';
 import SettingsPage from './pages/SettingsPage';
 import ScrollToTop from './components/ScrollToTop';
+import { Header } from './components/Header';
 import { Loader2 } from 'lucide-react';
 
 const queryClient = new QueryClient({
@@ -123,6 +124,7 @@ export default function App() {
           <ScrollToTop />
           <ThemeProvider>
             <AuthProvider>
+              <Header />
               <AppRoutes />
               <Toaster position="top-right" />
             </AuthProvider>
