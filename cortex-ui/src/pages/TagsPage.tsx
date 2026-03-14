@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { tagsApi } from '../api/endpoints';
 import { Tags, Plus, Trash2, Edit3, X, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTheme } from '../hooks/useTheme';
 
 const COLORS = [
   '#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6',
@@ -10,6 +11,7 @@ const COLORS = [
 ];
 
 export default function TagsPage() {
+  const { isDark } = useTheme();
   const queryClient = useQueryClient();
   const [showCreate, setShowCreate] = useState(false);
   const [editingTag, setEditingTag] = useState<string | null>(null);
@@ -68,7 +70,7 @@ export default function TagsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Tags</h1>
+        <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Tags</h1>
         <button
           onClick={() => {
             setShowCreate(true);
@@ -83,21 +85,21 @@ export default function TagsPage() {
 
       {/* Create/Edit Form */}
       {(showCreate || editingTag) && (
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className={`rounded-xl border p-5 transition-colors duration-300 ${isDark ? 'bg-blue-900/40 border-blue-800' : 'bg-white border-gray-200'}`}>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-gray-900">
+            <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
               {editingTag ? 'Edit Tag' : 'Create Tag'}
             </h3>
-            <button
-              onClick={() => {
-                setShowCreate(false);
-                setEditingTag(null);
-              }}
-              className="p-1 text-gray-400 hover:text-gray-600"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+              <button
+                onClick={() => {
+                  setShowCreate(false);
+                  setEditingTag(null);
+                }}
+                className={`p-1 transition-colors ${isDark ? 'text-blue-400/60 hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -110,24 +112,26 @@ export default function TagsPage() {
             className="space-y-4"
           >
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+              <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-blue-100/60' : 'text-gray-700'}`}>Name</label>
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors ${
+                  isDark ? 'bg-blue-900/40 border-blue-800 text-white placeholder-blue-400/30' : 'bg-white border-gray-300 text-gray-900'
+                }`}
                 placeholder="e.g., Important, Review, Archive"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Color</label>
+              <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-blue-100/60' : 'text-gray-700'}`}>Color</label>
               <div className="flex gap-2 flex-wrap">
                 {COLORS.map((c) => (
                   <button
                     key={c}
                     type="button"
                     onClick={() => setColor(c)}
-                    className={`w-8 h-8 rounded-full border-2 transition-all ${color === c ? 'border-gray-900 scale-110' : 'border-transparent'
+                    className={`w-8 h-8 rounded-full border-2 transition-all ${color === c ? (isDark ? 'border-white scale-110' : 'border-gray-900 scale-110') : 'border-transparent'
                       }`}
                     style={{ backgroundColor: c }}
                   />
@@ -149,14 +153,14 @@ export default function TagsPage() {
         {(data?.tags ?? []).map((tag) => (
           <div
             key={tag.id}
-            className="bg-white rounded-xl border border-gray-200 p-4 flex items-center justify-between"
+            className={`rounded-xl border p-4 flex items-center justify-between transition-colors duration-300 ${isDark ? 'bg-blue-900/40 border-blue-800' : 'bg-white border-gray-200'}`}
           >
             <div className="flex items-center gap-3">
               <div
-                className="w-4 h-4 rounded-full"
+                className="w-4 h-4 rounded-full shadow-sm"
                 style={{ backgroundColor: tag.color }}
               />
-              <span className="font-medium text-gray-900">{tag.name}</span>
+              <span className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{tag.name}</span>
             </div>
             <div className="flex gap-1">
               <button
@@ -166,13 +170,13 @@ export default function TagsPage() {
                   setColor(tag.color);
                   setShowCreate(false);
                 }}
-                className="p-1.5 text-gray-400 hover:text-blue-500"
+                className={`p-1.5 transition-colors ${isDark ? 'text-blue-400/40 hover:text-blue-400' : 'text-gray-400 hover:text-blue-500'}`}
               >
                 <Edit3 className="w-4 h-4" />
               </button>
               <button
                 onClick={() => deleteMutation.mutate(tag.id)}
-                className="p-1.5 text-gray-400 hover:text-red-500"
+                className={`p-1.5 transition-colors ${isDark ? 'text-blue-400/40 hover:text-red-400' : 'text-gray-400 hover:text-red-500'}`}
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -182,7 +186,7 @@ export default function TagsPage() {
       </div>
 
       {(data?.tags ?? []).length === 0 && !showCreate && (
-        <div className="text-center py-12 text-gray-400">
+        <div className={`text-center py-12 ${isDark ? 'text-blue-100/40' : 'text-gray-400'}`}>
           <Tags className="w-12 h-12 mx-auto mb-3 opacity-50" />
           <p>No tags yet. Create one to organize your documents.</p>
         </div>

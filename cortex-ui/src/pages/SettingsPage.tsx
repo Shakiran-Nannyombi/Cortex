@@ -4,8 +4,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { authApi } from '../api/endpoints';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTheme } from '../hooks/useTheme';
 
 export default function SettingsPage() {
+    const { isDark } = useTheme();
     const { user, logout } = useAuth();
     const queryClient = useQueryClient();
     const [fullName, setFullName] = useState(user?.full_name || '');
@@ -59,43 +61,49 @@ export default function SettingsPage() {
 
     return (
         <div className="space-y-6 max-w-2xl">
-            <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+            <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Settings</h1>
 
             {/* Profile Section */}
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Profile Information</h2>
+            <div className={`rounded-xl border p-6 transition-colors duration-300 ${isDark ? 'bg-blue-900/40 border-blue-800' : 'bg-white border-gray-200'}`}>
+                <h2 className={`text-lg font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Profile Information</h2>
                 <form onSubmit={handleProfileSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-blue-100/60' : 'text-gray-700'}`}>
                             Full Name
                         </label>
                         <input
                             type="text"
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors ${
+                                isDark ? 'bg-blue-900/40 border-blue-800 text-white placeholder-blue-400/30' : 'bg-white border-gray-300 text-gray-900'
+                            }`}
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-blue-100/60' : 'text-gray-700'}`}>
                             Username
                         </label>
                         <input
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors ${
+                                isDark ? 'bg-blue-900/40 border-blue-800 text-white placeholder-blue-400/30' : 'bg-white border-gray-300 text-gray-900'
+                            }`}
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-blue-100/60' : 'text-gray-700'}`}>
                             Email (Read-only)
                         </label>
                         <input
                             type="email"
                             value={user?.email || ''}
                             disabled
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 outline-none"
+                            className={`w-full px-3 py-2 border rounded-lg outline-none transition-colors ${
+                                isDark ? 'bg-blue-950/40 border-blue-800/50 text-blue-100/40' : 'bg-gray-50 border-gray-200 text-gray-500'
+                            }`}
                         />
                     </div>
                     <button
@@ -116,11 +124,11 @@ export default function SettingsPage() {
             </div>
 
             {/* Password Section */}
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Change Password</h2>
+            <div className={`rounded-xl border p-6 transition-colors duration-300 ${isDark ? 'bg-blue-900/40 border-blue-800' : 'bg-white border-gray-200'}`}>
+                <h2 className={`text-lg font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Change Password</h2>
                 <form onSubmit={handlePasswordSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-blue-100/60' : 'text-gray-700'}`}>
                             Current Password
                         </label>
                         <input
@@ -128,11 +136,13 @@ export default function SettingsPage() {
                             value={currentPassword}
                             onChange={(e) => setCurrentPassword(e.target.value)}
                             required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors ${
+                                isDark ? 'bg-blue-900/40 border-blue-800 text-white placeholder-blue-400/30' : 'bg-white border-gray-300 text-gray-900'
+                            }`}
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-blue-100/60' : 'text-gray-700'}`}>
                             New Password
                         </label>
                         <input
@@ -141,14 +151,16 @@ export default function SettingsPage() {
                             onChange={(e) => setNewPassword(e.target.value)}
                             required
                             minLength={8}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors ${
+                                isDark ? 'bg-blue-900/40 border-blue-800 text-white placeholder-blue-400/30' : 'bg-white border-gray-300 text-gray-900'
+                            }`}
                         />
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className={`text-xs mt-1 ${isDark ? 'text-blue-100/40' : 'text-gray-500'}`}>
                             Must be at least 8 characters
                         </p>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-blue-100/60' : 'text-gray-700'}`}>
                             Confirm Password
                         </label>
                         <input
@@ -156,7 +168,9 @@ export default function SettingsPage() {
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors ${
+                                isDark ? 'bg-blue-900/40 border-blue-800 text-white placeholder-blue-400/30' : 'bg-white border-gray-300 text-gray-900'
+                            }`}
                         />
                     </div>
                     <button
@@ -169,55 +183,57 @@ export default function SettingsPage() {
             </div>
 
             {/* Account Statistics */}
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Account Statistics</h2>
+            <div className={`rounded-xl border p-6 transition-colors duration-300 ${isDark ? 'bg-blue-900/40 border-blue-800' : 'bg-white border-gray-200'}`}>
+                <h2 className={`text-lg font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Account Statistics</h2>
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <p className="text-sm text-gray-500">Member Since</p>
-                        <p className="text-lg font-semibold text-gray-900 mt-1">
+                        <p className={`text-sm ${isDark ? 'text-blue-100/60' : 'text-gray-500'}`}>Member Since</p>
+                        <p className={`text-lg font-semibold mt-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                             {user?.created_at
                                 ? new Date(user.created_at).toLocaleDateString()
                                 : 'N/A'}
                         </p>
                     </div>
                     <div>
-                        <p className="text-sm text-gray-500">Account Status</p>
-                        <p className="text-lg font-semibold text-green-600 mt-1">Active</p>
+                        <p className={`text-sm ${isDark ? 'text-blue-100/60' : 'text-gray-500'}`}>Account Status</p>
+                        <p className={`text-lg font-semibold mt-1 ${isDark ? 'text-green-400' : 'text-green-600'}`}>Active</p>
                     </div>
                 </div>
             </div>
 
             {/* Delete Account Section */}
-            <div className="bg-red-50 rounded-xl border border-red-200 p-6">
+            <div className={`rounded-xl border p-6 transition-colors duration-300 ${isDark ? 'bg-red-900/20 border-red-900/50' : 'bg-red-50 border-red-200'}`}>
                 <div className="flex items-start gap-3">
-                    <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 shrink-0" />
+                    <AlertTriangle className={`w-5 h-5 mt-0.5 shrink-0 ${isDark ? 'text-red-400' : 'text-red-600'}`} />
                     <div className="flex-1">
-                        <h2 className="text-lg font-semibold text-red-900 mb-2">Delete Account</h2>
-                        <p className="text-sm text-red-700 mb-4">
+                        <h2 className={`text-lg font-semibold mb-2 ${isDark ? 'text-red-400' : 'text-red-900'}`}>Delete Account</h2>
+                        <p className={`text-sm mb-4 ${isDark ? 'text-red-400/80' : 'text-red-700'}`}>
                             This action cannot be undone. All your data will be permanently deleted.
                         </p>
                         {!showDeleteConfirm ? (
                             <button
                                 onClick={() => setShowDeleteConfirm(true)}
-                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium"
+                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium transition-colors shadow-sm"
                             >
                                 Delete Account
                             </button>
                         ) : (
                             <div className="space-y-3">
-                                <p className="text-sm font-medium text-red-900">
+                                <p className={`text-sm font-medium ${isDark ? 'text-red-400' : 'text-red-900'}`}>
                                     Are you sure? This cannot be undone.
                                 </p>
                                 <div className="flex gap-2">
                                     <button
                                         onClick={handleDeleteAccount}
-                                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium"
+                                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium transition-colors shadow-sm"
                                     >
                                         Yes, Delete My Account
                                     </button>
                                     <button
                                         onClick={() => setShowDeleteConfirm(false)}
-                                        className="px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 text-sm font-medium"
+                                        className={`px-4 py-2 border rounded-lg text-sm font-medium transition-colors ${
+                                            isDark ? 'border-red-900/50 text-red-400 hover:bg-red-900/40' : 'border-red-300 text-red-700 hover:bg-red-50'
+                                        }`}
                                     >
                                         Cancel
                                     </button>
