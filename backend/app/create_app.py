@@ -1,5 +1,6 @@
 """Flask application factory."""
 import os
+from dotenv import load_dotenv
 
 from flask import Flask
 
@@ -11,6 +12,10 @@ def create_app(config_name=None):
     """Create and configure the Flask application."""
     if config_name is None:
         config_name = os.environ.get("FLASK_ENV", "development")
+
+    # Only load .env files in development
+    if config_name == "development":
+        load_dotenv(".env.local")
 
     app = Flask(__name__)
     app.config.from_object(config[config_name])
