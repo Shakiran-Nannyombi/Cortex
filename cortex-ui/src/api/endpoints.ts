@@ -15,6 +15,7 @@ export const authApi = {
     api.post<AuthResponse>('/auth/register', data),
   login: (data: { email: string; password: string }) =>
     api.post<AuthResponse>('/auth/login', data),
+  demoLogin: () => api.post<AuthResponse>('/auth/demo-login', {}),
   me: () => api.get<{ user: AuthResponse['user'] }>('/auth/me'),
   updateProfile: (data: { full_name?: string; username?: string }) =>
     api.put<{ user: AuthResponse['user'] }>('/auth/me', data),
