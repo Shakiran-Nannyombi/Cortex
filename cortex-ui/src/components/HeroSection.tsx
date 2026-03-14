@@ -208,7 +208,7 @@ export default function HeroSection() {
     }, []);
 
     return (
-        <section className={`relative ${isDark ? 'bg-gray-950' : 'bg-white'}`} style={{ overflowX: 'clip' }}>
+        <section className={`relative ${isDark ? 'bg-blue-950' : 'bg-white'}`} style={{ overflowX: 'clip' }}>
             <BackgroundAnimation />
             
             <div className="relative mx-auto max-w-5xl px-6 py-28 lg:py-24">

@@ -50,7 +50,7 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
       </div>
     );
   }
-  return user ? <Navigate to="/" replace /> : <>{children}</>;
+  return user ? <Navigate to="/dashboard" replace /> : <>{children}</>;
 }
 
 function AppRoutes() {
@@ -125,7 +125,8 @@ function AppRoutes() {
 function ConditionalHeader() {
   const { pathname } = useLocation();
   const authRoutes = ['/login', '/register'];
-  if (authRoutes.includes(pathname)) return null;
+  const dashboardRoutes = ['/dashboard', '/documents', '/workspaces', '/search', '/tags', '/api-keys', '/settings'];
+  if (authRoutes.includes(pathname) || dashboardRoutes.includes(pathname)) return null;
   return <Header />;
 }
 

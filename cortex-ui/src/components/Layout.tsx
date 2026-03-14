@@ -7,7 +7,6 @@ import {
   BarChart3,
   Tags,
   LogOut,
-  Menu,
   X,
   Key,
   Settings,
@@ -36,7 +35,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col pt-14">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <div className="flex flex-1 overflow-hidden">
       {/* Mobile overlay */}
       {sidebarOpen && (

@@ -19,7 +19,7 @@ export default function LoginPage() {
     try {
       await login(email, password);
       toast.success('Welcome back!');
-      navigate('/');
+      navigate('/dashboard');
     } catch (err: unknown) {
       const error = err as { response?: { data?: { error?: string } } };
       toast.error(error.response?.data?.error || 'Login failed');
@@ -28,16 +28,15 @@ export default function LoginPage() {
     }
   };
 
-  const inputClass = `w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all duration-200 ${
-    isDark
-      ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
+  const inputClass = `w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all duration-200 ${isDark
+      ? 'bg-blue-900/50 border-blue-800 text-white placeholder-blue-500 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20'
       : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
-  }`;
+    }`;
 
   const labelClass = `block text-sm font-medium mb-1.5 ${isDark ? 'text-gray-300' : 'text-gray-700'}`;
 
   return (
-    <div className={`min-h-screen flex ${isDark ? 'bg-gray-950' : 'bg-white'}`}>
+    <div className={`min-h-screen flex ${isDark ? 'bg-blue-950' : 'bg-white'}`}>
       {/* Left image panel */}
       <div
         className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 overflow-hidden"
@@ -66,8 +65,8 @@ export default function LoginPage() {
           <div className="space-y-4">
             {[
               { icon: Sparkles, text: 'AI-powered document summarization' },
-              { icon: Brain,    text: 'Cross-document querying' },
-              { icon: Globe,    text: 'Multi-language translation' },
+              { icon: Brain, text: 'Cross-document querying' },
+              { icon: Globe, text: 'Multi-language translation' },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
@@ -85,13 +84,12 @@ export default function LoginPage() {
       </div>
 
       {/* Right form panel */}
-      <div className={`w-full lg:w-1/2 flex flex-col items-center justify-center px-6 py-16 relative ${isDark ? 'bg-gray-950' : 'bg-gray-50'}`}>
+      <div className={`w-full lg:w-1/2 flex flex-col items-center justify-center px-6 py-16 relative ${isDark ? 'bg-blue-950' : 'bg-gray-50'}`}>
         <div className="absolute top-8 left-8">
           <Link
             to="/"
-            className={`flex items-center gap-2 text-sm font-medium transition-colors ${
-              isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'
-            }`}
+            className={`flex items-center gap-2 text-sm font-medium transition-colors ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'
+              }`}
           >
             <ArrowRight className="w-4 h-4 rotate-180" />
             Back to Home

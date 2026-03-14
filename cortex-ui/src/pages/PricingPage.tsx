@@ -191,7 +191,7 @@ export default function PricingPage() {
                 </section>
 
                 {/* Trust Strip */}
-                <section className={`py-16 ${isDark ? 'bg-gray-950' : 'bg-white'}`}>
+                <section className={`py-16 ${isDark ? 'bg-blue-950' : 'bg-white'}`}>
                     <div className="max-w-5xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
                         {[
                             { icon: Shield, title: 'SOC 2 Compliant', sub: 'Enterprise-grade security and privacy.' },

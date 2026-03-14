@@ -94,9 +94,9 @@ export default function FeaturesPage() {
 
     return (
         <div className={isDark ? 'dark' : ''}>
-            <div className={isDark ? 'bg-gray-950' : 'bg-white'}>
+            <div className={isDark ? 'bg-blue-950' : 'bg-white'}>
                 {/* Hero */}
-                <section className={`relative pt-28 pb-20 overflow-hidden ${isDark ? 'bg-gray-950' : 'bg-white'}`}>
+                <section className={`relative pt-28 pb-20 overflow-hidden ${isDark ? 'bg-blue-950' : 'bg-white'}`}>
                     <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808010_1px,transparent_1px),linear-gradient(to_bottom,#80808010_1px,transparent_1px)] bg-size-[40px_40px] pointer-events-none" />
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[120px] pointer-events-none" />
                     <div className="relative max-w-4xl mx-auto px-6 text-center">

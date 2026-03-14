@@ -61,7 +61,7 @@ export default function AboutPage() {
 
 
                 {/* Values */}
-                <section className={`py-24 ${isDark ? 'bg-gray-950' : 'bg-white'}`}>
+                <section className={`py-24 ${isDark ? 'bg-blue-950' : 'bg-white'}`}>
                     <div className="max-w-7xl mx-auto px-6">
                         <h2 className={`text-3xl md:text-4xl font-bold text-center mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                             What we stand for
