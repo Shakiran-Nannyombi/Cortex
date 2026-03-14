@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { FileText, Zap, Shield, BarChart3, Search, Lock } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import HeroSection from '../components/HeroSection';
+import Footer from '../components/Footer';
 
 export default function LandingPage() {
     const { isDark } = useTheme();
@@ -70,7 +71,7 @@ export default function LandingPage() {
             </section>
 
             {/* Benefits Section */}
-            <section id="why" className={`py-20 ${isDark ? 'bg-gradient-to-r from-blue-900 to-indigo-900' : 'bg-gradient-to-r from-blue-600 to-indigo-600'}`}>
+            <section id="why" className={`py-20 ${isDark ? 'bg-linear-to-r from-blue-900 to-indigo-900' : 'bg-linear-to-r from-blue-600 to-indigo-600'}`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
                     <h2 className="text-4xl font-bold mb-6">Why Choose Cortex?</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
@@ -109,11 +110,7 @@ export default function LandingPage() {
             </section>
 
             {/* Footer */}
-            <footer className={`py-8 ${isDark ? 'bg-gray-900 text-gray-400' : 'bg-gray-900 text-gray-400'}`}>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <p>&copy; 2024 Cortex. All rights reserved.</p>
-                </div>
-            </footer>
+            <Footer />
         </div>
     );
 }

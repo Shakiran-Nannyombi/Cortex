@@ -1,1 +1,50 @@
 @import "tailwindcss";
+
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
+}
+
+@layer utilities {
+  .mask-b-gradient {
+    mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+  }
+  .mask-r-gradient {
+    mask-image: linear-gradient(to right, black 50%, transparent 100%);
+  }
+  .rotate-x-20 {
+    transform: rotateX(20deg);
+  }
+  .perspective-distant {
+    perspective: 1200px;
+  }
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(1.1); }
+}
+
+.animate-scan {
+  animation: scan 4s linear infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 8s ease-in-out infinite;
+}
