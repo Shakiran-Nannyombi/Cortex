@@ -54,28 +54,24 @@ def create_app(config_name=None):
     # Import models for migration support
     from app import models  # noqa: F401
 
-    # Try to run migrations on startup
+    # Create tables on startup
     with app.app_context():
         try:
-            # Try to connect to database
-            db.engine.connect()
-            print("Database connection successful")
-            
-            # Run migrations
-            from flask_migrate import upgrade
-            try:
-                upgrade()
-                print("Migrations completed")
-            except Exception as e:
-                print(f"Migration warning: {e}")
-                # Try to create tables directly
+            db_url = app.config.get('SQLALCHEMY_DATABASE_URI', '')
+            if db_url.startswith('sqlite'):
+                # SQLite - just create tables directly
+                db.create_all()
+                print("SQLite tables created")
+            else:
+                # PostgreSQL - run migrations
+                from flask_migrate import upgrade
                 try:
+                    upgrade()
+                    print("Migrations completed")
+                except Exception as e:
+                    print(f"Migration warning: {e}")
                     db.create_all()
-                    print("Tables created")
-                except Exception as e2:
-                    print(f"Table creation warning: {e2}")
         except Exception as e:
             print(f"Database initialization warning: {e}")
-            print("App will continue but database operations may fail")
 
     return app
