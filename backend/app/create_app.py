@@ -52,8 +52,15 @@ def create_app(config_name=None):
     # Create tables if they don't exist (for first run)
     with app.app_context():
         try:
-            db.create_all()
+            # Run migrations
+            from flask_migrate import upgrade
+            upgrade()
         except Exception as e:
-            print(f"Warning: Could not create tables: {e}")
+            print(f"Warning: Could not run migrations: {e}")
+            # Try to create tables directly
+            try:
+                db.create_all()
+            except Exception as e2:
+                print(f"Warning: Could not create tables: {e2}")
 
     return app
