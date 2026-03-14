@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, Send, X, Loader2 } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
 import toast from 'react-hot-toast';
 
@@ -17,7 +16,6 @@ export default function Chatbot() {
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const { user } = useAuth();
     const { isDark } = useTheme();
 
     const scrollToBottom = () => {
