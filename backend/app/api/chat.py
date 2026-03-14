@@ -1,29 +1,10 @@
 """Chat API endpoints for chatbot functionality."""
 from flask import request, jsonify
 from flask_cors import cross_origin
+from flask_jwt_extended import jwt_required, get_jwt_identity
 import openai
 import os
-from functools import wraps
 from app.models.user import User
-
-def token_required(f):
-    """Decorator to check JWT token."""
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = request.headers.get('Authorization')
-        if not token:
-            return jsonify({'error': 'Missing authorization token'}), 401
-        try:
-            token = token.split(' ')[1]
-            from app.extensions import jwt
-            data = jwt.decode(token, options={"verify_signature": False})
-            user = User.query.get(data['user_id'])
-            if not user:
-                return jsonify({'error': 'User not found'}), 401
-        except Exception as e:
-            return jsonify({'error': 'Invalid token'}), 401
-        return f(*args, **kwargs)
-    return decorated
 
 def create_chat_bp():
     """Create chat blueprint."""
@@ -32,10 +13,15 @@ def create_chat_bp():
 
     @chat_bp.route('/message', methods=['POST'])
     @cross_origin()
-    @token_required
+    @jwt_required()
     def send_message():
         """Send a message to the chatbot."""
         try:
+            user_id = get_jwt_identity()
+            user = User.query.get(user_id)
+            if not user:
+                return jsonify({'error': 'User not found'}), 401
+            
             data = request.get_json()
             message = data.get('message', '').strip()
             
@@ -43,8 +29,11 @@ def create_chat_bp():
                 return jsonify({'error': 'Message cannot be empty'}), 400
             
             api_key = os.getenv('OPENAI_API_KEY')
-            if not api_key:
-                return jsonify({'error': 'OpenAI API key not configured'}), 500
+            if not api_key or api_key == 'your-openai-api-key-here':
+                return jsonify({
+                    'error': 'Chatbot is not configured. Please add OPENAI_API_KEY to environment variables.',
+                    'message': 'Demo mode: Chatbot would respond here with OpenAI API key configured.'
+                }), 503
             
             openai.api_key = api_key
             

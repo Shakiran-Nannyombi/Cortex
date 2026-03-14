@@ -27,7 +27,6 @@ const apiKeysApi = {
 export default function APIKeysPage() {
     const { isDark } = useTheme();
     const queryClient = useQueryClient();
-    const { isDark } = useTheme();
     const [showCreate, setShowCreate] = useState(false);
     const [showKey, setShowKey] = useState<string | null>(null);
     const [name, setName] = useState('');

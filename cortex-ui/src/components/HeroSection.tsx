@@ -175,6 +175,26 @@ export default function HeroSection() {
     const sectionRef = useRef<HTMLDivElement>(null);
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+    const handleDemoLogin = async () => {
+        try {
+            const response = await fetch('/api/auth/demo-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            if (!response.ok) {
+                throw new Error('Demo login failed');
+            }
+
+            const data = await response.json();
+            localStorage.setItem('access_token', data.access_token);
+            localStorage.setItem('refresh_token', data.refresh_token);
+            window.location.href = '/dashboard';
+        } catch {
+            // Error handling can be silent or minimal here, handled globally by toast if imported
+        }
+    };
+
     const startCycle = () => {
         if (intervalRef.current) return;
         intervalRef.current = setInterval(() => {
@@ -225,12 +245,24 @@ export default function HeroSection() {
                     >
                         Upload, organize, and search your documents with advanced OCR and AI-powered insights. Cortex transforms how you manage information.
                     </p>
-                    <Link
-                        to="/register"
-                        className="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-lg duration-150"
-                    >
-                        Start Building
-                    </Link>
+                    <div className="flex gap-4 justify-center">
+                        <Link
+                            to="/register"
+                            className="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-lg transition-colors"
+                        >
+                            Start Building
+                        </Link>
+                        <button
+                            onClick={handleDemoLogin}
+                            className={`inline-block px-8 py-3 rounded-lg font-medium text-lg transition-colors ${
+                                isDark
+                                    ? 'bg-gray-800 text-white hover:bg-gray-700 border border-gray-700'
+                                    : 'bg-white text-gray-900 hover:bg-gray-50 border border-gray-200 shadow-sm'
+                            }`}
+                        >
+                            View Demo
+                        </button>
+                    </div>
                 </div>
             </div>
 

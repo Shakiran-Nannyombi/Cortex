@@ -16,7 +16,6 @@ import {
   Menu,
 } from 'lucide-react';
 import { useState } from 'react';
-import { useTheme } from '../hooks/useTheme';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();

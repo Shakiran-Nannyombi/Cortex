@@ -16,7 +16,6 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useTheme } from '../hooks/useTheme';
 import type { Document } from '../types';
 
 function StatusBadge({ status }: { status: Document['status'] }) {
@@ -63,7 +62,6 @@ function formatBytes(bytes: number): string {
 export default function DocumentsPage() {
   const { isDark } = useTheme();
   const queryClient = useQueryClient();
-  const { isDark } = useTheme();
   const [page, setPage] = useState(1);
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
 

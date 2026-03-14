@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FileText, Zap, Shield, BarChart3, Search, Lock } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { useAuth } from '../hooks/useAuth';
@@ -8,8 +8,7 @@ import toast from 'react-hot-toast';
 
 export default function LandingPage() {
     const { isDark } = useTheme();
-    const { login } = useAuth();
-    const navigate = useNavigate();
+    useAuth();
 
     const handleDemoLogin = async () => {
         try {
@@ -23,11 +22,12 @@ export default function LandingPage() {
             }
 
             const data = await response.json();
-            localStorage.setItem('token', data.access_token);
-            localStorage.setItem('refreshToken', data.refresh_token);
+            localStorage.setItem('access_token', data.access_token);
+            localStorage.setItem('refresh_token', data.refresh_token);
             toast.success('Welcome to demo!');
-            navigate('/dashboard');
-        } catch (error) {
+            // Reload to trigger auth context refresh
+            window.location.href = '/dashboard';
+        } catch {
             toast.error('Failed to load demo account');
         }
     };
@@ -135,8 +135,8 @@ export default function LandingPage() {
                         <button
                             onClick={handleDemoLogin}
                             className={`inline-block px-8 py-3 rounded-lg font-medium text-lg transition-colors ${isDark
-                                    ? 'bg-gray-700 text-white hover:bg-gray-600'
-                                    : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
+                                ? 'bg-gray-700 text-white hover:bg-gray-600'
+                                : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
                                 }`}
                         >
                             View Demo

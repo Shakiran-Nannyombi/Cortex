@@ -28,9 +28,30 @@ export default function LoginPage() {
     }
   };
 
+  const handleDemoLogin = async () => {
+    try {
+      const response = await fetch('/api/auth/demo-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!response.ok) {
+        throw new Error('Demo login failed');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('refresh_token', data.refresh_token);
+      toast.success('Welcome to demo!');
+      window.location.href = '/dashboard';
+    } catch {
+      toast.error('Failed to load demo account');
+    }
+  };
+
   const inputClass = `w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all duration-200 ${isDark
-      ? 'bg-blue-900/50 border-blue-800 text-white placeholder-blue-500 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20'
-      : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
+    ? 'bg-blue-900/50 border-blue-800 text-white placeholder-blue-500 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20'
+    : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
     }`;
 
   const labelClass = `block text-sm font-medium mb-1.5 ${isDark ? 'text-gray-300' : 'text-gray-700'}`;
@@ -159,6 +180,17 @@ export default function LoginPage() {
                   Sign In <ArrowRight className="w-4 h-4" />
                 </>
               )}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleDemoLogin}
+              className={`w-full py-3 px-4 rounded-xl font-semibold transition-all duration-200 text-sm mt-2 ${isDark
+                  ? 'bg-gray-700 text-white hover:bg-gray-600'
+                  : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
+                }`}
+            >
+              Try Demo Account
             </button>
           </form>
 

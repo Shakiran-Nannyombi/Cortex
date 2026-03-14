@@ -5,12 +5,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { authApi } from '../api/endpoints';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useTheme } from '../hooks/useTheme';
 
 export default function SettingsPage() {
     const { isDark } = useTheme();
     const { user, logout } = useAuth();
-    const { isDark } = useTheme();
     const queryClient = useQueryClient();
     const [fullName, setFullName] = useState(user?.full_name || '');
     const [username, setUsername] = useState(user?.username || '');
