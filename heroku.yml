@@ -1,5 +1,11 @@
 build:
   docker:
     web: Dockerfile
+release:
+  image: web
+  command:
+    - bash
+    - -c
+    - cd /app/backend && flask --app wsgi:app db upgrade
 run:
-  web: docker-compose up
+  web: gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:$PORT wsgi:app
