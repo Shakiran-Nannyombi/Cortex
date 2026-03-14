@@ -44,13 +44,18 @@ export default function Chatbot() {
         setLoading(true);
 
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('access_token');
+            const headers: HeadersInit = {
+                'Content-Type': 'application/json',
+            };
+
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
             const response = await fetch('/api/chat/message', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
+                headers,
                 body: JSON.stringify({ message: input }),
             });
 
@@ -75,16 +80,14 @@ export default function Chatbot() {
         }
     };
 
-    if (!user) return null;
-
     return (
         <>
             {/* Chatbot Button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={`fixed bottom-6 right-6 p-4 rounded-full shadow-lg transition-all duration-300 z-40 ${isDark
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
                     }`}
                 title="Open Chatbot"
             >
@@ -138,10 +141,10 @@ export default function Chatbot() {
                             >
                                 <div
                                     className={`max-w-xs px-3 py-2 rounded-lg text-sm ${msg.role === 'user'
-                                            ? 'bg-blue-600 text-white rounded-br-none'
-                                            : isDark
-                                                ? 'bg-gray-800 text-gray-100 rounded-bl-none'
-                                                : 'bg-gray-100 text-gray-900 rounded-bl-none'
+                                        ? 'bg-blue-600 text-white rounded-br-none'
+                                        : isDark
+                                            ? 'bg-gray-800 text-gray-100 rounded-bl-none'
+                                            : 'bg-gray-100 text-gray-900 rounded-bl-none'
                                         }`}
                                 >
                                     {msg.content}
@@ -174,8 +177,8 @@ export default function Chatbot() {
                             placeholder="Type a message..."
                             disabled={loading}
                             className={`flex-1 px-3 py-2 rounded-lg text-sm outline-none ${isDark
-                                    ? 'bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500'
-                                    : 'bg-white text-gray-900 placeholder-gray-400 border border-gray-200 focus:ring-2 focus:ring-blue-500'
+                                ? 'bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500'
+                                : 'bg-white text-gray-900 placeholder-gray-400 border border-gray-200 focus:ring-2 focus:ring-blue-500'
                                 }`}
                         />
                         <button

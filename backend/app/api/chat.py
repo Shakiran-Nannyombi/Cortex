@@ -13,14 +13,14 @@ def create_chat_bp():
 
     @chat_bp.route('/message', methods=['POST'])
     @cross_origin()
-    @jwt_required()
+    @jwt_required(optional=True)
     def send_message():
         """Send a message to the chatbot."""
         try:
             user_id = get_jwt_identity()
-            user = User.query.get(user_id)
-            if not user:
-                return jsonify({'error': 'User not found'}), 401
+            user = None
+            if user_id:
+                user = User.query.get(user_id)
             
             data = request.get_json()
             message = data.get('message', '').strip()
