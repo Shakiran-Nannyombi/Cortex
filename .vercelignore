@@ -1,0 +1,13 @@
+backend/
+docs/
+.git/
+.github/
+render.yaml
+Procfile
+runtime.txt
+requirements.txt
+docker-compose.yml
+Dockerfile
+.env.example
+README.md
+LICENSE
