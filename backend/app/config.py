@@ -9,27 +9,18 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-production")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # Database
-    @staticmethod
-    def get_database_url():
-        """Get database URL with proper handling for different environments."""
-        db_url = os.environ.get("DATABASE_URL")
-        
-        if not db_url:
-            # Only use localhost fallback in development
-            if os.environ.get("FLASK_ENV") != "production":
-                db_url = "postgresql://cortex:cortex@localhost:5432/cortex"
-            else:
-                # In production, DATABASE_URL must be set by Render
-                db_url = "postgresql://cortex:cortex@localhost:5432/cortex"  # Fallback, will fail if not set
-        
-        # Handle Render's postgres:// to postgresql:// conversion
-        if db_url and db_url.startswith("postgres://"):
-            db_url = db_url.replace("postgres://", "postgresql://", 1)
-        
-        return db_url
+    # Database - SQLite for prototype, PostgreSQL for production
+    db_url = os.environ.get("DATABASE_URL")
     
-    SQLALCHEMY_DATABASE_URI = get_database_url.__func__()
+    if not db_url:
+        # Use SQLite as default (free, no setup needed)
+        db_url = "sqlite:///cortex.db"
+    
+    # Handle Render's postgres:// to postgresql:// conversion
+    if db_url and db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
+    
+    SQLALCHEMY_DATABASE_URI = db_url
 
     # JWT
     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", SECRET_KEY)
