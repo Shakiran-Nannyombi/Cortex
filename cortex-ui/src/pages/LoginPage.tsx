@@ -85,7 +85,19 @@ export default function LoginPage() {
       </div>
 
       {/* Right form panel */}
-      <div className={`w-full lg:w-1/2 flex items-center justify-center px-6 py-16 ${isDark ? 'bg-gray-950' : 'bg-gray-50'}`}>
+      <div className={`w-full lg:w-1/2 flex flex-col items-center justify-center px-6 py-16 relative ${isDark ? 'bg-gray-950' : 'bg-gray-50'}`}>
+        <div className="absolute top-8 left-8">
+          <Link
+            to="/"
+            className={`flex items-center gap-2 text-sm font-medium transition-colors ${
+              isDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'
+            }`}
+          >
+            <ArrowRight className="w-4 h-4 rotate-180" />
+            Back to Home
+          </Link>
+        </div>
+
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <Link to="/" className="flex lg:hidden items-center gap-2 mb-10 justify-center">
