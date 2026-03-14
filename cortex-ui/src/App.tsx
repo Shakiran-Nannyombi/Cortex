@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContextProvider';
@@ -6,6 +6,7 @@ import { ThemeProvider } from './context/ThemeContextProvider';
 import { useAuth } from './hooks/useAuth';
 import ErrorBoundary from './components/ErrorBoundary';
 import Layout from './components/Layout';
+import Chatbot from './components/Chatbot';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import LandingPage from './pages/LandingPage';
@@ -16,6 +17,11 @@ import SearchPage from './pages/SearchPage';
 import TagsPage from './pages/TagsPage';
 import APIKeysPage from './pages/APIKeysPage';
 import SettingsPage from './pages/SettingsPage';
+import FeaturesPage from './pages/FeaturesPage';
+import PricingPage from './pages/PricingPage';
+import AboutPage from './pages/AboutPage';
+import ScrollToTop from './components/ScrollToTop';
+import { Header } from './components/Header';
 import { Loader2 } from 'lucide-react';
 
 const queryClient = new QueryClient({
@@ -48,22 +54,13 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   return user ? <Navigate to="/dashboard" replace /> : <>{children}</>;
 }
 
-function LandingPageRoute() {
-  const { user, isLoading } = useAuth();
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-      </div>
-    );
-  }
-  return user ? <Navigate to="/dashboard" replace /> : <LandingPage />;
-}
-
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<LandingPageRoute />} />
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/features" element={<FeaturesPage />} />
+      <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/about" element={<AboutPage />} />
       <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
       <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
       <Route
@@ -126,14 +123,25 @@ function AppRoutes() {
   );
 }
 
+function ConditionalHeader() {
+  const { pathname } = useLocation();
+  const authRoutes = ['/login', '/register'];
+  const dashboardRoutes = ['/dashboard', '/documents', '/workspaces', '/search', '/tags', '/api-keys', '/settings'];
+  if (authRoutes.includes(pathname) || dashboardRoutes.includes(pathname)) return null;
+  return <Header />;
+}
+
 export default function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
+          <ScrollToTop />
           <ThemeProvider>
             <AuthProvider>
+              <ConditionalHeader />
               <AppRoutes />
+              <Chatbot />
               <Toaster position="top-right" />
             </AuthProvider>
           </ThemeProvider>

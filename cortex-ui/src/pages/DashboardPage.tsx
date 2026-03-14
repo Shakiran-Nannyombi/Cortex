@@ -10,6 +10,7 @@ import {
   AlertCircle,
   Loader2,
 } from 'lucide-react';
+import { useTheme } from '../hooks/useTheme';
 import type { Document } from '../types';
 
 function formatBytes(bytes: number): string {
@@ -34,6 +35,7 @@ function StatusIcon({ status }: { status: string }) {
 }
 
 export default function DashboardPage() {
+  const { isDark } = useTheme();
   const { data, isLoading } = useQuery({
     queryKey: ['dashboard'],
     queryFn: () => analyticsApi.dashboard().then((r) => r.data),
@@ -52,43 +54,43 @@ export default function DashboardPage() {
       label: 'Total Documents',
       value: data?.total_documents ?? 0,
       icon: FileText,
-      color: 'bg-blue-50 text-blue-600',
+      color: isDark ? 'bg-blue-600/20 text-blue-400' : 'bg-blue-50 text-blue-600',
     },
     {
       label: 'Workspaces',
       value: data?.total_workspaces ?? 0,
       icon: FolderOpen,
-      color: 'bg-purple-50 text-purple-600',
+      color: isDark ? 'bg-purple-600/20 text-purple-400' : 'bg-purple-50 text-purple-600',
     },
     {
       label: 'Tags',
       value: data?.total_tags ?? 0,
       icon: Tags,
-      color: 'bg-green-50 text-green-600',
+      color: isDark ? 'bg-green-600/20 text-green-400' : 'bg-green-50 text-green-600',
     },
     {
       label: 'Storage Used',
       value: formatBytes(data?.total_storage_bytes ?? 0),
       icon: HardDrive,
-      color: 'bg-orange-50 text-orange-600',
+      color: isDark ? 'bg-orange-600/20 text-orange-400' : 'bg-orange-50 text-orange-600',
     },
   ];
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+      <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Dashboard</h1>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5"
+            className={`rounded-xl border p-5 transition-colors duration-300 ${isDark ? 'bg-blue-900/40 border-blue-800' : 'bg-white border-gray-200'}`}
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{stat.value}</p>
+                <p className={`text-sm ${isDark ? 'text-blue-100/60' : 'text-gray-500'}`}>{stat.label}</p>
+                <p className={`text-2xl font-bold mt-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{stat.value}</p>
               </div>
               <div className={`p-3 rounded-lg ${stat.color}`}>
                 <stat.icon className="w-6 h-6" />
@@ -101,8 +103,8 @@ export default function DashboardPage() {
       {/* Status Breakdown & Recent Documents */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Status Breakdown */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <div className={`rounded-xl border p-5 transition-colors duration-300 ${isDark ? 'bg-blue-900/40 border-blue-800' : 'bg-white border-gray-200'}`}>
+          <h2 className={`text-lg font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
             Processing Status
           </h2>
           <div className="space-y-3">
@@ -110,9 +112,9 @@ export default function DashboardPage() {
               <div key={status} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <StatusIcon status={status} />
-                  <span className="text-sm text-gray-700 dark:text-gray-300 capitalize">{status}</span>
+                  <span className={`text-sm capitalize ${isDark ? 'text-blue-100/60' : 'text-gray-700'}`}>{status}</span>
                 </div>
-                <span className="text-sm font-medium text-gray-900 dark:text-white">{count}</span>
+                <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{count}</span>
               </div>
             ))}
             {Object.keys(data?.status_breakdown ?? {}).length === 0 && (
@@ -122,8 +124,8 @@ export default function DashboardPage() {
         </div>
 
         {/* Recent Documents */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <div className={`rounded-xl border p-5 transition-colors duration-300 ${isDark ? 'bg-blue-900/40 border-blue-800' : 'bg-white border-gray-200'}`}>
+          <h2 className={`text-lg font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
             Recent Documents
           </h2>
           <div className="space-y-3">
@@ -132,10 +134,10 @@ export default function DashboardPage() {
                 <div className="flex items-center gap-3 min-w-0">
                   <StatusIcon status={doc.status} />
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    <p className={`text-sm font-medium truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
                       {doc.title}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className={`text-xs ${isDark ? 'text-blue-100/60' : 'text-gray-500'}`}>
                       {new Date(doc.created_at).toLocaleDateString()}
                     </p>
                   </div>
@@ -154,13 +156,13 @@ export default function DashboardPage() {
 
       {/* File Type Breakdown */}
       {Object.keys(data?.type_breakdown ?? {}).length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">File Types</h2>
+        <div className={`rounded-xl border p-5 transition-colors duration-300 ${isDark ? 'bg-blue-900/40 border-blue-800' : 'bg-white border-gray-200'}`}>
+          <h2 className={`text-lg font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>File Types</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {Object.entries(data?.type_breakdown ?? {}).map(([type, count]) => (
-              <div key={type} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
-                <p className="text-lg font-bold text-gray-900 dark:text-white">{count}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{type.split('/')[1] || type}</p>
+              <div key={type} className={`rounded-lg p-3 text-center ${isDark ? 'bg-blue-800/20' : 'bg-gray-50'}`}>
+                <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{count}</p>
+                <p className={`text-xs truncate ${isDark ? 'text-blue-100/60' : 'text-gray-500'}`}>{type.split('/')[1] || type}</p>
               </div>
             ))}
           </div>

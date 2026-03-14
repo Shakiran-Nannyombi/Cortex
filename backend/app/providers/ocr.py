@@ -33,9 +33,22 @@ class GCPVisionOCR(OCRProvider):
     def extract_text(self, file_path: str) -> str:
         """Extract text using Google Cloud Vision."""
         try:
+            import json
+            import base64
             from google.cloud import vision
+            from google.oauth2 import service_account
 
-            client = vision.ImageAnnotatorClient()
+            # Try to get credentials from environment
+            creds_json = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS_JSON')
+            if creds_json:
+                # Decode base64-encoded credentials
+                creds_dict = json.loads(base64.b64decode(creds_json))
+                credentials = service_account.Credentials.from_service_account_info(creds_dict)
+                client = vision.ImageAnnotatorClient(credentials=credentials)
+            else:
+                # Use default credentials (GOOGLE_APPLICATION_CREDENTIALS file or ADC)
+                client = vision.ImageAnnotatorClient()
+
             with open(file_path, "rb") as f:
                 content = f.read()
             image = vision.Image(content=content)

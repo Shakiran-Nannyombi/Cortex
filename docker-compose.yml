@@ -1,89 +1,68 @@
+version: '3.8'
+
 services:
-  # PostgreSQL Database
   db:
-    image: postgres:16-alpine
+    image: postgres:15-alpine
+    container_name: cortex-db
     environment:
       POSTGRES_USER: cortex
       POSTGRES_PASSWORD: cortex
       POSTGRES_DB: cortex
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U cortex"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 5
 
-  # Redis
   redis:
     image: redis:7-alpine
+    container_name: cortex-redis
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 5
 
-  # Flask Backend
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cortex-backend
     environment:
-      FLASK_ENV: development
+      FLASK_ENV: production
       DATABASE_URL: postgresql://cortex:cortex@db:5432/cortex
       REDIS_URL: redis://redis:6379/0
-      CELERY_BROKER_URL: redis://redis:6379/0
-      CELERY_RESULT_BACKEND: redis://redis:6379/0
-      SECRET_KEY: change-this-in-production
-      JWT_SECRET_KEY: change-this-in-production
-      UPLOAD_FOLDER: /app/uploads
-      CLOUD_PROVIDER: local
-      OCR_PROVIDER: tesseract
-      STORAGE_PROVIDER: local
-    volumes:
-      - upload_data:/app/uploads
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-key-change-in-production}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-dev-jwt-secret-key-change-in-production}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OCR_PROVIDER: ${OCR_PROVIDER:-tesseract}
+      GOOGLE_APPLICATION_CREDENTIALS_JSON: ${GOOGLE_APPLICATION_CREDENTIALS_JSON:-}
     ports:
       - "5000:5000"
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    command: >
-      bash -c "
-        flask --app wsgi:app db upgrade --directory app/migrations || true &&
-        flask --app wsgi:app db init --directory app/migrations || true &&
-        flask --app wsgi:app db migrate --directory app/migrations || true &&
-        flask --app wsgi:app db upgrade --directory app/migrations || true &&
-        python -c 'from app.create_app import create_app; from app.extensions import db; app=create_app(); app.app_context().push(); db.create_all(); print(\"Tables created\")' &&
-        gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 120 wsgi:app
-      "
-
-  # Celery Worker
-  worker:
-    build: ./backend
-    environment:
-      FLASK_ENV: development
-      DATABASE_URL: postgresql://cortex:cortex@db:5432/cortex
-      REDIS_URL: redis://redis:6379/0
-      CELERY_BROKER_URL: redis://redis:6379/0
-      CELERY_RESULT_BACKEND: redis://redis:6379/0
-      UPLOAD_FOLDER: /app/uploads
-      OCR_PROVIDER: tesseract
     volumes:
-      - upload_data:/app/uploads
+      - ./backend/uploads:/app/uploads
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
-    command: celery -A app.celery_app:make_celery worker --loglevel=info
+    command: gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:5000 wsgi:app
 
-  # React Frontend
   frontend:
-    build: ./cortex-ui
+    build:
+      context: ./cortex-ui
+      dockerfile: Dockerfile
+    container_name: cortex-frontend
+    environment:
+      VITE_API_URL: http://localhost:5000
     ports:
       - "3000:80"
     depends_on:
@@ -91,4 +70,4 @@ services:
 
 volumes:
   postgres_data:
-  upload_data:
+  redis_data:

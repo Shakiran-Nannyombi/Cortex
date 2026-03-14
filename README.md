@@ -54,13 +54,48 @@ Cloud Services (GCP/AWS/Azure) or Local Services
 - Redis for caching/queuing
 - Nginx for frontend serving
 
+## Demo Account
+
+Try the app with pre-loaded demo data:
+
+**Email:** `demo@cortex.app`  
+**Password:** `Demo@123`
+
+Demo includes 2 workspaces, 3 folders, 6 sample documents, and 5 tags.
+
+## Deployment
+
+### Docker Deployment (Recommended for Demo)
+
+For complete Docker Compose setup with persistent volumes, see [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md).
+
+Quick start:
+```bash
+docker-compose up -d
+# Access at http://localhost:3000
+```
+
+### Heroku Deployment
+
+For Heroku deployment with cloud services, see [HEROKU_DEPLOYMENT.md](HEROKU_DEPLOYMENT.md).
+
 ## Quick Start
 
 ### Prerequisites
 
-- Docker and Docker Compose installed
+- Docker and Docker Compose installed (for Docker deployment)
 - Git installed
 - (Optional) Node.js 20+ and Python 3.11+ for local development
+
+### Docker Compose (Recommended)
+
+```bash
+git clone https://github.com/Shakiran-Nannyombi/Cortex.git
+cd Cortex
+docker-compose up -d
+```
+
+Access at http://localhost:3000
 
 ### Local Development with Docker Compose
 

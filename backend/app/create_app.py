@@ -34,6 +34,7 @@ def create_app(config_name=None):
     from app.api.search import search_bp
     from app.api.analytics import analytics_bp
     from app.api.health import health_bp
+    from app.api.chat import create_chat_bp
 
     app.register_blueprint(health_bp, url_prefix="/api")
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
@@ -43,6 +44,7 @@ def create_app(config_name=None):
     app.register_blueprint(tags_bp, url_prefix="/api/tags")
     app.register_blueprint(search_bp, url_prefix="/api/search")
     app.register_blueprint(analytics_bp, url_prefix="/api/analytics")
+    app.register_blueprint(create_chat_bp())
 
     # Import models for migration support
     from app import models  # noqa: F401
