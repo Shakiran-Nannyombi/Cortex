@@ -54,18 +54,28 @@ def create_app(config_name=None):
     # Import models for migration support
     from app import models  # noqa: F401
 
-    # Create tables if they don't exist (for first run)
+    # Try to run migrations on startup
     with app.app_context():
         try:
+            # Try to connect to database
+            db.engine.connect()
+            print("Database connection successful")
+            
             # Run migrations
             from flask_migrate import upgrade
-            upgrade()
-        except Exception as e:
-            print(f"Warning: Could not run migrations: {e}")
-            # Try to create tables directly
             try:
-                db.create_all()
-            except Exception as e2:
-                print(f"Warning: Could not create tables: {e2}")
+                upgrade()
+                print("Migrations completed")
+            except Exception as e:
+                print(f"Migration warning: {e}")
+                # Try to create tables directly
+                try:
+                    db.create_all()
+                    print("Tables created")
+                except Exception as e2:
+                    print(f"Table creation warning: {e2}")
+        except Exception as e:
+            print(f"Database initialization warning: {e}")
+            print("App will continue but database operations may fail")
 
     return app

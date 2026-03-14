@@ -13,7 +13,15 @@ class Config:
     @staticmethod
     def get_database_url():
         """Get database URL with proper handling for different environments."""
-        db_url = os.environ.get("DATABASE_URL", "postgresql://cortex:cortex@localhost:5432/cortex")
+        db_url = os.environ.get("DATABASE_URL")
+        
+        if not db_url:
+            # Only use localhost fallback in development
+            if os.environ.get("FLASK_ENV") != "production":
+                db_url = "postgresql://cortex:cortex@localhost:5432/cortex"
+            else:
+                # In production, DATABASE_URL must be set by Render
+                db_url = "postgresql://cortex:cortex@localhost:5432/cortex"  # Fallback, will fail if not set
         
         # Handle Render's postgres:// to postgresql:// conversion
         if db_url and db_url.startswith("postgres://"):
