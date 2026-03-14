@@ -1,11 +1,36 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FileText, Zap, Shield, BarChart3, Search, Lock } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
+import { useAuth } from '../hooks/useAuth';
 import HeroSection from '../components/HeroSection';
 import Footer from '../components/Footer';
+import toast from 'react-hot-toast';
 
 export default function LandingPage() {
     const { isDark } = useTheme();
+    const { login } = useAuth();
+    const navigate = useNavigate();
+
+    const handleDemoLogin = async () => {
+        try {
+            const response = await fetch('/api/auth/demo-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            if (!response.ok) {
+                throw new Error('Demo login failed');
+            }
+
+            const data = await response.json();
+            localStorage.setItem('token', data.access_token);
+            localStorage.setItem('refreshToken', data.refresh_token);
+            toast.success('Welcome to demo!');
+            navigate('/dashboard');
+        } catch (error) {
+            toast.error('Failed to load demo account');
+        }
+    };
     const features = [
         {
             icon: FileText,
@@ -55,8 +80,8 @@ export default function LandingPage() {
                             <div
                                 key={feature.title}
                                 className={`p-6 rounded-xl border transition-shadow hover:shadow-lg ${isDark
-                                        ? 'bg-gray-800 border-gray-700 hover:shadow-blue-900/20'
-                                        : 'bg-white border-gray-200 hover:shadow-gray-200'
+                                    ? 'bg-gray-800 border-gray-700 hover:shadow-blue-900/20'
+                                    : 'bg-white border-gray-200 hover:shadow-gray-200'
                                     }`}
                             >
                                 <feature.icon className="w-12 h-12 text-blue-600 mb-4" />
@@ -100,12 +125,23 @@ export default function LandingPage() {
                     <p className={`text-xl mb-8 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                         Join thousands of users who trust Cortex for their document management.
                     </p>
-                    <Link
-                        to="/register"
-                        className="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-lg"
-                    >
-                        Create Free Account
-                    </Link>
+                    <div className="flex gap-4 justify-center">
+                        <Link
+                            to="/register"
+                            className="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-lg"
+                        >
+                            Create Free Account
+                        </Link>
+                        <button
+                            onClick={handleDemoLogin}
+                            className={`inline-block px-8 py-3 rounded-lg font-medium text-lg transition-colors ${isDark
+                                    ? 'bg-gray-700 text-white hover:bg-gray-600'
+                                    : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
+                                }`}
+                        >
+                            View Demo
+                        </button>
+                    </div>
                 </div>
             </section>
 

@@ -128,3 +128,23 @@ def update_profile():
 
     db.session.commit()
     return jsonify({"user": user.to_dict()}), 200
+
+
+@auth_bp.route("/demo-login", methods=["POST"])
+def demo_login():
+    """Login with demo account automatically."""
+    demo_user = User.query.filter_by(email="demo@cortex.app").first()
+    if not demo_user:
+        return jsonify({"error": "Demo account not found"}), 404
+
+    if not demo_user.is_active:
+        return jsonify({"error": "Demo account is deactivated"}), 403
+
+    access_token = create_access_token(identity=str(demo_user.id))
+    refresh_token = create_refresh_token(identity=str(demo_user.id))
+
+    return jsonify({
+        "user": demo_user.to_dict(),
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+    }), 200
