@@ -54,6 +54,15 @@ Cloud Services (GCP/AWS/Azure) or Local Services
 - Redis for caching/queuing
 - Nginx for frontend serving
 
+## Demo Account
+
+Try the app with pre-loaded demo data:
+
+**Email:** `demo@cortex.app`  
+**Password:** `Demo@123`
+
+Demo includes 2 workspaces, 3 folders, 6 sample documents, and 5 tags.
+
 ## Quick Start
 
 ### Prerequisites
