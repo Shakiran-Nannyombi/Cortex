@@ -51,17 +51,24 @@ export default function Chatbot() {
                 headers['Authorization'] = `Bearer ${token}`;
             }
 
-            const response = await fetch('/api/chat/message', {
-                method: 'POST',
-                headers,
-                body: JSON.stringify({ message: input }),
-            });
+            const apiUrl = import.meta.env.VITE_API_URL || 'https://cortex-nboq.onrender.com';
 
-            if (!response.ok) {
-                throw new Error('Failed to send message');
+            let data;
+            try {
+                const response = await fetch(`${apiUrl}/api/chat/message`, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({ message: input }),
+                });
+
+                if (!response.ok) throw new Error('API error');
+                data = await response.json();
+            } catch {
+                // Fallback mock response when backend is unavailable
+                data = {
+                    message: `Thanks for your question! Cortex is a document management platform that helps you organize, process, and search through your documents using AI. The backend is currently starting up - please try again in a moment.`
+                };
             }
-
-            const data = await response.json();
             const assistantMessage: Message = {
                 id: (Date.now() + 1).toString(),
                 role: 'assistant',
@@ -99,7 +106,7 @@ export default function Chatbot() {
             {/* Chatbot Window */}
             {isOpen && (
                 <div
-                    className={`fixed bottom-24 right-6 w-96 max-h-96 rounded-xl shadow-2xl flex flex-col z-40 transition-all duration-300 ${isDark ? 'bg-gray-900 border border-gray-700' : 'bg-white border border-gray-200'
+                    className={`fixed bottom-24 right-2 left-2 sm:left-auto sm:right-6 sm:w-96 max-h-[70vh] rounded-xl shadow-2xl flex flex-col z-40 transition-all duration-300 ${isDark ? 'bg-gray-900 border border-gray-700' : 'bg-white border border-gray-200'
                         }`}
                 >
                     {/* Header */}
