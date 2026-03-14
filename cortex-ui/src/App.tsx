@@ -6,6 +6,7 @@ import { ThemeProvider } from './context/ThemeContextProvider';
 import { useAuth } from './hooks/useAuth';
 import ErrorBoundary from './components/ErrorBoundary';
 import Layout from './components/Layout';
+import Chatbot from './components/Chatbot';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import LandingPage from './pages/LandingPage';
@@ -140,6 +141,7 @@ export default function App() {
             <AuthProvider>
               <ConditionalHeader />
               <AppRoutes />
+              <Chatbot />
               <Toaster position="top-right" />
             </AuthProvider>
           </ThemeProvider>
