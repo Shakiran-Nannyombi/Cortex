@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContextProvider';
@@ -16,6 +16,9 @@ import SearchPage from './pages/SearchPage';
 import TagsPage from './pages/TagsPage';
 import APIKeysPage from './pages/APIKeysPage';
 import SettingsPage from './pages/SettingsPage';
+import FeaturesPage from './pages/FeaturesPage';
+import PricingPage from './pages/PricingPage';
+import AboutPage from './pages/AboutPage';
 import ScrollToTop from './components/ScrollToTop';
 import { Header } from './components/Header';
 import { Loader2 } from 'lucide-react';
@@ -54,6 +57,9 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
+      <Route path="/features" element={<FeaturesPage />} />
+      <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/about" element={<AboutPage />} />
       <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
       <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
       <Route
@@ -116,6 +122,13 @@ function AppRoutes() {
   );
 }
 
+function ConditionalHeader() {
+  const { pathname } = useLocation();
+  const authRoutes = ['/login', '/register'];
+  if (authRoutes.includes(pathname)) return null;
+  return <Header />;
+}
+
 export default function App() {
   return (
     <ErrorBoundary>
@@ -124,7 +137,7 @@ export default function App() {
           <ScrollToTop />
           <ThemeProvider>
             <AuthProvider>
-              <Header />
+              <ConditionalHeader />
               <AppRoutes />
               <Toaster position="top-right" />
             </AuthProvider>

@@ -19,15 +19,15 @@ export function Header() {
 	const links = [
 		{
 			label: 'Features',
-			href: '#',
+			href: '/features',
 		},
 		{
 			label: 'Pricing',
-			href: '#',
+			href: '/pricing',
 		},
 		{
 			label: 'About',
-			href: '#',
+			href: '/about',
 		},
 	];
 
@@ -56,16 +56,16 @@ export function Header() {
 				</Link>
 				<div className="hidden items-center gap-2 md:flex">
 					{links.map((link) => (
-						<a
+						<Link
 							key={link.label}
 							className={buttonVariants({
 								variant: 'ghost',
 								className: 'text-white hover:text-white hover:bg-white/10',
 							})}
-							href={link.href}
+							to={link.href}
 						>
 							{link.label}
-						</a>
+						</Link>
 					))}
 					<Button
 						variant="ghost"
@@ -75,15 +75,17 @@ export function Header() {
 					>
 						{isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
 					</Button>
-					<Button
-						variant="outline"
-						className="border-white/20 text-white hover:bg-white/10 bg-transparent"
-					>
-						Sign In
-					</Button>
-					<Button className="bg-white text-blue-600 hover:bg-blue-50 border-none font-bold">
-						Get Started
-					</Button>
+					<Link to="/login">
+						<Button
+							variant="outline"
+							className="border-white/20 text-white hover:bg-white/10 bg-transparent"
+						>
+							Sign In
+						</Button>
+					</Link>
+					<Link to="/register">
+						<Button className="bg-white text-blue-600 hover:bg-blue-50 border-none font-bold">Get Started</Button>
+					</Link>
 				</div>
 				<Button
 					size="icon"
@@ -100,28 +102,31 @@ export function Header() {
 			<MobileMenu open={open} className="flex flex-col justify-between gap-2">
 				<div className="grid gap-y-2">
 					{links.map((link) => (
-						<a
+						<Link
 							key={link.label}
 							className={buttonVariants({
 								variant: 'ghost',
 								className: 'justify-start text-blue-50 hover:text-white hover:bg-white/10',
 							})}
-							href={link.href}
+							to={link.href}
+							onClick={() => setOpen(false)}
 						>
 							{link.label}
-						</a>
+						</Link>
 					))}
 				</div>
 				<div className="flex flex-col gap-2">
-					<Button
-						variant="outline"
-						className="w-full bg-transparent border-white/20 text-white hover:bg-white/10"
-					>
-						Sign In
-					</Button>
-					<Button className="w-full bg-white text-blue-600 hover:bg-blue-50 border-none font-bold">
-						Get Started
-					</Button>
+					<Link to="/login" onClick={() => setOpen(false)}>
+						<Button
+							variant="outline"
+							className="w-full bg-transparent border-white/20 text-white hover:bg-white/10"
+						>
+							Sign In
+						</Button>
+					</Link>
+					<Link to="/register" onClick={() => setOpen(false)}>
+						<Button className="w-full bg-white text-blue-600 hover:bg-blue-50 border-none font-bold">Get Started</Button>
+					</Link>
 				</div>
 			</MobileMenu>
 		</header>
