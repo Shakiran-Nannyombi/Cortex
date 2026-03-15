@@ -32,6 +32,8 @@ const queryClient = new QueryClient({
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
+  const token = localStorage.getItem('access_token');
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -39,7 +41,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
       </div>
     );
   }
-  return user ? <>{children}</> : <Navigate to="/login" replace />;
+  // Allow access if user is set OR if token exists (handles race condition after demo login)
+  return (user || token) ? <>{children}</> : <Navigate to="/login" replace />;
 }
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
