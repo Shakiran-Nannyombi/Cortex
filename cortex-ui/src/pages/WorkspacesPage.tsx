@@ -13,6 +13,29 @@ import toast from 'react-hot-toast';
 import { useTheme } from '../hooks/useTheme';
 import type { Workspace, Folder as FolderType } from '../types';
 
+const MOCK_WORKSPACES = {
+  workspaces: [
+    { id: '1', name: 'Reports', description: 'Financial and business reports', user_id: '1', document_count: 7, folder_count: 2, created_at: new Date(Date.now() - 604800000).toISOString(), updated_at: new Date().toISOString() },
+    { id: '2', name: 'Contracts', description: 'Legal contracts and agreements', user_id: '1', document_count: 3, folder_count: 1, created_at: new Date(Date.now() - 1209600000).toISOString(), updated_at: new Date().toISOString() },
+    { id: '3', name: 'Research', description: 'Research papers and notes', user_id: '1', document_count: 2, folder_count: 0, created_at: new Date(Date.now() - 2592000000).toISOString(), updated_at: new Date().toISOString() },
+  ],
+};
+
+const MOCK_FOLDERS: Record<string, { folders: FolderType[] }> = {
+  '1': {
+    folders: [
+      { id: '1', name: 'Q1 Reports', workspace_id: '1', parent_id: null, document_count: 4, children_count: 0, created_at: new Date().toISOString() },
+      { id: '2', name: 'Q2 Reports', workspace_id: '1', parent_id: null, document_count: 3, children_count: 0, created_at: new Date().toISOString() },
+    ]
+  },
+  '2': {
+    folders: [
+      { id: '3', name: 'Active Contracts', workspace_id: '2', parent_id: null, document_count: 3, children_count: 0, created_at: new Date().toISOString() },
+    ]
+  },
+  '3': { folders: [] },
+};
+
 function CreateModal({
   title,
   onClose,
@@ -52,9 +75,8 @@ function CreateModal({
                 value={values[field.name] || ''}
                 onChange={(e) => setValues({ ...values, [field.name]: e.target.value })}
                 required={field.required}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors ${
-                  isDark ? 'bg-blue-900/40 border-blue-800 text-white placeholder-blue-400/30' : 'bg-white border-gray-300 text-gray-900'
-                }`}
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors ${isDark ? 'bg-blue-900/40 border-blue-800 text-white placeholder-blue-400/30' : 'bg-white border-gray-300 text-gray-900'
+                  }`}
               />
             </div>
           ))}
@@ -62,9 +84,8 @@ function CreateModal({
             <button
               type="button"
               onClick={onClose}
-              className={`px-4 py-2 text-sm border rounded-lg transition-colors ${
-                isDark ? 'border-blue-800 text-blue-400 hover:bg-blue-800/40' : 'border-gray-300 text-gray-600 hover:bg-gray-50'
-              }`}
+              className={`px-4 py-2 text-sm border rounded-lg transition-colors ${isDark ? 'border-blue-800 text-blue-400 hover:bg-blue-800/40' : 'border-gray-300 text-gray-600 hover:bg-gray-50'
+                }`}
             >
               Cancel
             </button>
@@ -87,10 +108,12 @@ export default function WorkspacesPage() {
   const [showCreateWs, setShowCreateWs] = useState(false);
   const [showCreateFolder, setShowCreateFolder] = useState<string | null>(null);
   const [selectedWs, setSelectedWs] = useState<Workspace | null>(null);
+  const isDemo = localStorage.getItem('access_token') === 'demo-mock-token';
 
   const { data: wsData, isLoading } = useQuery({
     queryKey: ['workspaces'],
     queryFn: () => workspacesApi.list().then((r) => r.data),
+    enabled: !isDemo,
   });
 
   const { data: foldersData } = useQuery({
@@ -99,8 +122,11 @@ export default function WorkspacesPage() {
       selectedWs
         ? foldersApi.list({ workspace_id: selectedWs.id }).then((r) => r.data)
         : Promise.resolve({ folders: [] }),
-    enabled: !!selectedWs,
+    enabled: !!selectedWs && !isDemo,
   });
+
+  const effectiveWsData = isDemo ? MOCK_WORKSPACES : wsData;
+  const effectiveFoldersData = isDemo && selectedWs ? MOCK_FOLDERS[selectedWs.id] ?? { folders: [] } : foldersData;
 
   const createWsMutation = useMutation({
     mutationFn: (data: Record<string, string>) =>
@@ -144,7 +170,7 @@ export default function WorkspacesPage() {
     },
   });
 
-  if (isLoading) {
+  if (!isDemo && isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -157,7 +183,7 @@ export default function WorkspacesPage() {
       <div className="flex items-center justify-between">
         <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Workspaces</h1>
         <button
-          onClick={() => setShowCreateWs(true)}
+          onClick={() => isDemo ? toast('Demo mode — create is disabled') : setShowCreateWs(true)}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
         >
           <Plus className="w-4 h-4" /> New Workspace
@@ -165,14 +191,13 @@ export default function WorkspacesPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {(wsData?.workspaces ?? []).map((ws) => (
+        {(effectiveWsData?.workspaces ?? []).map((ws) => (
           <div
             key={ws.id}
-            className={`rounded-xl border p-5 cursor-pointer transition-all duration-300 hover:shadow-md ${
-              selectedWs?.id === ws.id
-                ? (isDark ? 'border-blue-500 ring-4 ring-blue-500/10 bg-blue-900/40' : 'border-blue-500 ring-2 ring-blue-100 bg-white')
-                : (isDark ? 'border-blue-800 bg-blue-900/20 hover:bg-blue-800/20' : 'border-gray-200 bg-white hover:bg-gray-50')
-            }`}
+            className={`rounded-xl border p-5 cursor-pointer transition-all duration-300 hover:shadow-md ${selectedWs?.id === ws.id
+              ? (isDark ? 'border-blue-500 ring-4 ring-blue-500/10 bg-blue-900/40' : 'border-blue-500 ring-2 ring-blue-100 bg-white')
+              : (isDark ? 'border-blue-800 bg-blue-900/20 hover:bg-blue-800/20' : 'border-gray-200 bg-white hover:bg-gray-50')
+              }`}
             onClick={() => setSelectedWs(selectedWs?.id === ws.id ? null : ws)}
           >
             <div className="flex items-start justify-between">
@@ -188,6 +213,7 @@ export default function WorkspacesPage() {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
+                  if (isDemo) { toast('Demo mode — delete is disabled'); return; }
                   deleteWsMutation.mutate(ws.id);
                 }}
                 className={`p-1 transition-colors ${isDark ? 'text-blue-400/40 hover:text-red-400' : 'text-gray-400 hover:text-red-500'}`}
@@ -202,7 +228,7 @@ export default function WorkspacesPage() {
           </div>
         ))}
 
-        {(wsData?.workspaces ?? []).length === 0 && (
+        {(effectiveWsData?.workspaces ?? []).length === 0 && (
           <div className={`col-span-full text-center py-12 ${isDark ? 'text-blue-100/40' : 'text-gray-400'}`}>
             <FolderOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
             <p>No workspaces yet. Create one to get started.</p>
@@ -218,19 +244,18 @@ export default function WorkspacesPage() {
               Folders in {selectedWs.name}
             </h2>
             <button
-              onClick={() => setShowCreateFolder(selectedWs.id)}
-              className={`flex items-center gap-1 px-3 py-1.5 text-sm border rounded-lg transition-colors ${
-                isDark ? 'text-blue-400 border-blue-800 hover:bg-blue-800/40' : 'text-blue-600 border-blue-200 hover:bg-blue-50'
-              }`}
+              onClick={() => isDemo ? toast('Demo mode — create is disabled') : setShowCreateFolder(selectedWs.id)}
+              className={`flex items-center gap-1 px-3 py-1.5 text-sm border rounded-lg transition-colors ${isDark ? 'text-blue-400 border-blue-800 hover:bg-blue-800/40' : 'text-blue-600 border-blue-200 hover:bg-blue-50'
+                }`}
             >
               <Plus className="w-4 h-4" /> New Folder
             </button>
           </div>
-          {(foldersData?.folders ?? []).length === 0 ? (
+          {(effectiveFoldersData?.folders ?? []).length === 0 ? (
             <p className={`text-sm ${isDark ? 'text-blue-100/40' : 'text-gray-400'}`}>No folders in this workspace</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {foldersData?.folders.map((folder: FolderType) => (
+              {effectiveFoldersData?.folders.map((folder: FolderType) => (
                 <div
                   key={folder.id}
                   className={`flex items-center justify-between rounded-lg p-3 transition-colors ${isDark ? 'bg-blue-800/20' : 'bg-gray-50'}`}
@@ -243,7 +268,7 @@ export default function WorkspacesPage() {
                     </div>
                   </div>
                   <button
-                    onClick={() => deleteFolderMutation.mutate(folder.id)}
+                    onClick={() => { if (isDemo) { toast('Demo mode — delete is disabled'); return; } deleteFolderMutation.mutate(folder.id); }}
                     className={`p-1 transition-colors ${isDark ? 'text-blue-400/40 hover:text-red-400' : 'text-gray-400 hover:text-red-500'}`}
                   >
                     <Trash2 className="w-4 h-4" />

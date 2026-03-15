@@ -11,7 +11,22 @@ import {
   Loader2,
 } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
+import { useAuth } from '../hooks/useAuth';
 import type { Document } from '../types';
+
+const MOCK_DASHBOARD = {
+  total_documents: 12,
+  total_workspaces: 3,
+  total_tags: 8,
+  total_storage_bytes: 24_500_000,
+  status_breakdown: { completed: 10, processing: 1, pending: 1 },
+  type_breakdown: { 'application/pdf': 7, 'image/png': 3, 'text/plain': 2 },
+  recent_documents: [
+    { id: '1', title: 'Financial Report Q1.pdf', filename: 'report.pdf', file_size: 2_400_000, mime_type: 'application/pdf', status: 'completed' as const, page_count: 12, content_preview: '', content_text: '', error_message: '', user_id: '1', workspace_id: '1', folder_id: null, tags: [], created_at: new Date(Date.now() - 86400000).toISOString(), updated_at: new Date().toISOString(), processed_at: new Date().toISOString() },
+    { id: '2', title: 'Annual Report 2025.pdf', filename: 'annual.pdf', file_size: 5_100_000, mime_type: 'application/pdf', status: 'completed' as const, page_count: 48, content_preview: '', content_text: '', error_message: '', user_id: '1', workspace_id: '1', folder_id: null, tags: [], created_at: new Date(Date.now() - 172800000).toISOString(), updated_at: new Date().toISOString(), processed_at: new Date().toISOString() },
+    { id: '3', title: 'Contract Draft.docx', filename: 'contract.docx', file_size: 890_000, mime_type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', status: 'processing' as const, page_count: 6, content_preview: '', content_text: '', error_message: '', user_id: '1', workspace_id: '2', folder_id: null, tags: [], created_at: new Date(Date.now() - 3600000).toISOString(), updated_at: new Date().toISOString(), processed_at: null },
+  ],
+};
 
 function formatBytes(bytes: number): string {
   if (bytes === 0) return '0 B';
@@ -36,12 +51,18 @@ function StatusIcon({ status }: { status: string }) {
 
 export default function DashboardPage() {
   const { isDark } = useTheme();
-  const { data, isLoading } = useQuery({
+  const { user } = useAuth();
+  const isDemo = localStorage.getItem('access_token') === 'demo-mock-token';
+
+  const { data: apiData, isLoading } = useQuery({
     queryKey: ['dashboard'],
     queryFn: () => analyticsApi.dashboard().then((r) => r.data),
+    enabled: !isDemo,
   });
 
-  if (isLoading) {
+  const data = isDemo ? MOCK_DASHBOARD : apiData;
+
+  if (!isDemo && isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />

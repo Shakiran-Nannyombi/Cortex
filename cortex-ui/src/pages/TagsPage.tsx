@@ -10,6 +10,16 @@ const COLORS = [
   '#EC4899', '#06B6D4', '#F97316', '#6366F1', '#14B8A6',
 ];
 
+const MOCK_TAGS = {
+  tags: [
+    { id: '1', name: 'Important', color: '#EF4444', user_id: '1', created_at: new Date().toISOString() },
+    { id: '2', name: 'Review', color: '#F59E0B', user_id: '1', created_at: new Date().toISOString() },
+    { id: '3', name: 'Archive', color: '#10B981', user_id: '1', created_at: new Date().toISOString() },
+    { id: '4', name: 'Finance', color: '#3B82F6', user_id: '1', created_at: new Date().toISOString() },
+    { id: '5', name: 'Legal', color: '#8B5CF6', user_id: '1', created_at: new Date().toISOString() },
+  ],
+};
+
 export default function TagsPage() {
   const { isDark } = useTheme();
   const queryClient = useQueryClient();
@@ -17,11 +27,15 @@ export default function TagsPage() {
   const [editingTag, setEditingTag] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [color, setColor] = useState(COLORS[0]);
+  const isDemo = localStorage.getItem('access_token') === 'demo-mock-token';
 
-  const { data, isLoading } = useQuery({
+  const { data: apiData, isLoading } = useQuery({
     queryKey: ['tags'],
     queryFn: () => tagsApi.list().then((r) => r.data),
+    enabled: !isDemo,
   });
+
+  const data = isDemo ? MOCK_TAGS : apiData;
 
   const createMutation = useMutation({
     mutationFn: () => tagsApi.create({ name, color }),
@@ -59,7 +73,7 @@ export default function TagsPage() {
     },
   });
 
-  if (isLoading) {
+  if (!isDemo && isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -73,6 +87,7 @@ export default function TagsPage() {
         <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Tags</h1>
         <button
           onClick={() => {
+            if (isDemo) { toast('Demo mode — create is disabled'); return; }
             setShowCreate(true);
             setName('');
             setColor(COLORS[0]);
@@ -90,16 +105,16 @@ export default function TagsPage() {
             <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
               {editingTag ? 'Edit Tag' : 'Create Tag'}
             </h3>
-              <button
-                onClick={() => {
-                  setShowCreate(false);
-                  setEditingTag(null);
-                }}
-                className={`p-1 transition-colors ${isDark ? 'text-blue-400/60 hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+            <button
+              onClick={() => {
+                setShowCreate(false);
+                setEditingTag(null);
+              }}
+              className={`p-1 transition-colors ${isDark ? 'text-blue-400/60 hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -117,9 +132,8 @@ export default function TagsPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors ${
-                  isDark ? 'bg-blue-900/40 border-blue-800 text-white placeholder-blue-400/30' : 'bg-white border-gray-300 text-gray-900'
-                }`}
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors ${isDark ? 'bg-blue-900/40 border-blue-800 text-white placeholder-blue-400/30' : 'bg-white border-gray-300 text-gray-900'
+                  }`}
                 placeholder="e.g., Important, Review, Archive"
               />
             </div>

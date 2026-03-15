@@ -1,15 +1,16 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
+import { useAuth } from '../hooks/useAuth';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import { cn } from '../lib/utils';
-import { 
-    Sparkles, 
-    LineChart, 
-    PieChart, 
-    Activity, 
-    Brain, 
-    FileText, 
+import {
+    Sparkles,
+    LineChart,
+    PieChart,
+    Activity,
+    Brain,
+    FileText,
     ChevronRight,
     ChevronLeft,
     Globe,
@@ -47,23 +48,23 @@ const BackgroundAnimation = () => (
 );
 
 const aiFeatures = [
-    { 
-        title: 'Intelligent Document Summarization', 
+    {
+        title: 'Intelligent Document Summarization',
         icon: Sparkles,
         description: 'AI condenses complex documents into clear, actionable insights in seconds.'
     },
-    { 
-        title: 'Cross-Document Querying', 
+    {
+        title: 'Cross-Document Querying',
         icon: Search,
         description: 'Ask questions across your entire document library at once.'
     },
-    { 
-        title: 'Automatic Entity Extraction', 
+    {
+        title: 'Automatic Entity Extraction',
         icon: Activity,
         description: 'Identify companies, people, terms, and key data automatically.'
     },
-    { 
-        title: 'Multi-language Translation', 
+    {
+        title: 'Multi-language Translation',
         icon: Globe,
         description: 'Translate and understand documents across 40+ languages instantly.'
     },
@@ -129,9 +130,8 @@ function FeatureMockup({ activeIndex, isDark }: { activeIndex: number, isDark: b
                                 { label: 'Deal Size', value: '$4.2M', color: 'green' },
                                 { label: 'Currency', value: 'USD', color: 'amber' }
                             ].map(tag => (
-                                <div key={tag.label} className={`p-3 rounded-lg border text-center ${
-                                    isDark ? `border-${tag.color}-500/30 bg-${tag.color}-500/10` : `border-${tag.color}-200 bg-${tag.color}-50`
-                                }`}>
+                                <div key={tag.label} className={`p-3 rounded-lg border text-center ${isDark ? `border-${tag.color}-500/30 bg-${tag.color}-500/10` : `border-${tag.color}-200 bg-${tag.color}-50`
+                                    }`}>
                                     <p className={`text-[10px] font-bold uppercase mb-1 ${isDark ? `text-${tag.color}-400` : `text-${tag.color}-600`}`}>{tag.label}</p>
                                     <p className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-800'}`}>{tag.value}</p>
                                 </div>
@@ -170,29 +170,16 @@ function FeatureMockup({ activeIndex, isDark }: { activeIndex: number, isDark: b
 
 export default function HeroSection() {
     const { isDark } = useTheme();
+    const { demoLogin } = useAuth();
+    const navigate = useNavigate();
     const [activeIndex, setActiveIndex] = useState(0);
 
     const sectionRef = useRef<HTMLDivElement>(null);
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     const handleDemoLogin = async () => {
-        try {
-            const response = await fetch('/api/auth/demo-login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-            });
-
-            if (!response.ok) {
-                throw new Error('Demo login failed');
-            }
-
-            const data = await response.json();
-            localStorage.setItem('access_token', data.access_token);
-            localStorage.setItem('refresh_token', data.refresh_token);
-            window.location.href = '/dashboard';
-        } catch {
-            // Error handling can be silent or minimal here, handled globally by toast if imported
-        }
+        await demoLogin();
+        navigate('/dashboard');
     };
 
     const startCycle = () => {
@@ -230,7 +217,7 @@ export default function HeroSection() {
     return (
         <section className={`relative ${isDark ? 'bg-blue-950' : 'bg-white'}`} style={{ overflowX: 'clip' }}>
             <BackgroundAnimation />
-            
+
             <div className="relative mx-auto max-w-5xl px-6 py-28 lg:py-24">
                 <div className="relative z-10 mx-auto max-w-2xl text-center">
                     <h1
@@ -254,11 +241,10 @@ export default function HeroSection() {
                         </Link>
                         <button
                             onClick={handleDemoLogin}
-                            className={`inline-block px-8 py-3 rounded-lg font-medium text-lg transition-colors ${
-                                isDark
-                                    ? 'bg-gray-800 text-white hover:bg-gray-700 border border-gray-700'
-                                    : 'bg-white text-gray-900 hover:bg-gray-50 border border-gray-200 shadow-sm'
-                            }`}
+                            className={`inline-block px-8 py-3 rounded-lg font-medium text-lg transition-colors ${isDark
+                                ? 'bg-gray-800 text-white hover:bg-gray-700 border border-gray-700'
+                                : 'bg-white text-gray-900 hover:bg-gray-50 border border-gray-200 shadow-sm'
+                                }`}
                         >
                             View Demo
                         </button>
@@ -362,7 +348,7 @@ export default function HeroSection() {
                             <p className={`text-lg mb-10 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                                 Don't just store documents. Chat with them. Our AI extracts insights, summarizes complex files, and answers your most critical questions.
                             </p>
-                            
+
                             <div className="relative space-y-3">
                                 {aiFeatures.map((feature, index) => {
                                     const Icon = feature.icon;
@@ -414,16 +400,15 @@ export default function HeroSection() {
                                     <button
                                         key={i}
                                         onClick={() => { stopCycle(); setActiveIndex(i); }}
-                                        className={`h-2 rounded-full transition-all duration-300 ${
-                                            activeIndex === i ? 'bg-blue-600 w-6' : (isDark ? 'bg-gray-600 w-2' : 'bg-gray-300 w-2')
-                                        }`}
+                                        className={`h-2 rounded-full transition-all duration-300 ${activeIndex === i ? 'bg-blue-600 w-6' : (isDark ? 'bg-gray-600 w-2' : 'bg-gray-300 w-2')
+                                            }`}
                                     />
                                 ))}
                             </div>
                         </div>
 
                         <div className="relative">
-                            <motion.div 
+                            <motion.div
                                 className={`rounded-2xl border shadow-2xl overflow-hidden ${isDark ? 'border-gray-800 bg-gray-900' : 'border-gray-200 bg-white'}`}
                                 animate={{ y: activeIndex * -4 }}
                                 transition={{ type: 'spring', stiffness: 120, damping: 20 }}
@@ -446,7 +431,7 @@ export default function HeroSection() {
 
                             {/* Mobile Arrows */}
                             <div className="flex justify-between mt-4 lg:hidden">
-                                <button 
+                                <button
                                     onClick={() => { stopCycle(); setActiveIndex(prev => Math.max(0, prev - 1)); }}
                                     disabled={activeIndex === 0}
                                     className={cn(
@@ -458,7 +443,7 @@ export default function HeroSection() {
                                 >
                                     <ChevronLeft className="w-4 h-4" /> Prev
                                 </button>
-                                <button 
+                                <button
                                     onClick={() => { stopCycle(); setActiveIndex(prev => Math.min(aiFeatures.length - 1, prev + 1)); }}
                                     disabled={activeIndex === aiFeatures.length - 1}
                                     className={cn(
@@ -516,7 +501,7 @@ export default function HeroSection() {
                                 </div>
                             </div>
                         </div>
-                         <div className="absolute -top-6 -left-6 w-32 h-32 bg-green-600/10 rounded-full blur-3xl -z-10"></div>
+                        <div className="absolute -top-6 -left-6 w-32 h-32 bg-green-600/10 rounded-full blur-3xl -z-10"></div>
                     </div>
                     <div className="order-1 lg:order-2">
                         <h2 className={`text-3xl md:text-4xl font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>

@@ -24,6 +24,11 @@ const apiKeysApi = {
     revoke: (id: string) => Promise.resolve({ data: { revoked: id } }),
 };
 
+const MOCK_API_KEYS: APIKey[] = [
+    { id: '1', name: 'Production Key', keyPreview: 'sk_live_****abc', createdAt: new Date(Date.now() - 604800000).toISOString(), isRevoked: false },
+    { id: '2', name: 'Development Key', keyPreview: 'sk_test_****xyz', createdAt: new Date(Date.now() - 1209600000).toISOString(), isRevoked: false },
+];
+
 export default function APIKeysPage() {
     const { isDark } = useTheme();
     const queryClient = useQueryClient();
@@ -31,11 +36,15 @@ export default function APIKeysPage() {
     const [showKey, setShowKey] = useState<string | null>(null);
     const [name, setName] = useState('');
     const [createdKey, setCreatedKey] = useState<CreateAPIKeyResponse | null>(null);
+    const isDemo = localStorage.getItem('access_token') === 'demo-mock-token';
 
-    const { data, isLoading } = useQuery({
+    const { data: apiData, isLoading } = useQuery({
         queryKey: ['apiKeys'],
         queryFn: () => apiKeysApi.list().then((r) => r.data),
+        enabled: !isDemo,
     });
+
+    const data = isDemo ? { apiKeys: MOCK_API_KEYS } : apiData;
 
     const createMutation = useMutation({
         mutationFn: () => apiKeysApi.create({ name }),
@@ -57,7 +66,7 @@ export default function APIKeysPage() {
         },
     });
 
-    if (isLoading) {
+    if (!isDemo && isLoading) {
         return (
             <div className="flex items-center justify-center h-64">
                 <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -71,6 +80,7 @@ export default function APIKeysPage() {
                 <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>API Keys</h1>
                 <button
                     onClick={() => {
+                        if (isDemo) { toast('Demo mode — create is disabled'); return; }
                         setShowCreate(true);
                         setName('');
                     }}
@@ -105,9 +115,8 @@ export default function APIKeysPage() {
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 required
-                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors ${
-                                    isDark ? 'bg-blue-900/40 border-blue-800 text-white placeholder-blue-400/30' : 'bg-white border-gray-300 text-gray-900'
-                                }`}
+                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-colors ${isDark ? 'bg-blue-900/40 border-blue-800 text-white placeholder-blue-400/30' : 'bg-white border-gray-300 text-gray-900'
+                                    }`}
                                 placeholder="e.g., Production API Key"
                             />
                         </div>

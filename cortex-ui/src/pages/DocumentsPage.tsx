@@ -20,6 +20,24 @@ import {
 import toast from 'react-hot-toast';
 import type { Document, Folder as FolderType } from '../types';
 
+const MOCK_DOCUMENTS = {
+  documents: [
+    { id: '1', title: 'Financial Report Q1.pdf', filename: 'report_q1.pdf', file_size: 2_400_000, mime_type: 'application/pdf', status: 'completed' as const, page_count: 12, content_preview: 'This report covers Q1 financial performance including revenue, expenses, and projections for the upcoming quarter.', content_text: '', error_message: '', user_id: '1', workspace_id: '1', folder_id: '1', tags: [{ id: '1', name: 'Important', color: '#FF6B6B', user_id: '1', created_at: new Date().toISOString() }], created_at: new Date(Date.now() - 86400000).toISOString(), updated_at: new Date().toISOString(), processed_at: new Date().toISOString() },
+    { id: '2', title: 'Annual Report 2025.pdf', filename: 'annual_2025.pdf', file_size: 5_100_000, mime_type: 'application/pdf', status: 'completed' as const, page_count: 48, content_preview: 'Annual report covering full year performance, strategic initiatives, and outlook for 2026.', content_text: '', error_message: '', user_id: '1', workspace_id: '1', folder_id: '2', tags: [], created_at: new Date(Date.now() - 172800000).toISOString(), updated_at: new Date().toISOString(), processed_at: new Date().toISOString() },
+    { id: '3', title: 'Contract Draft.docx', filename: 'contract_draft.docx', file_size: 890_000, mime_type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', status: 'processing' as const, page_count: 6, content_preview: '', content_text: '', error_message: '', user_id: '1', workspace_id: '2', folder_id: '3', tags: [{ id: '2', name: 'Review', color: '#4ECDC4', user_id: '1', created_at: new Date().toISOString() }], created_at: new Date(Date.now() - 3600000).toISOString(), updated_at: new Date().toISOString(), processed_at: null },
+    { id: '4', title: 'Research Notes.txt', filename: 'notes.txt', file_size: 45_000, mime_type: 'text/plain', status: 'completed' as const, page_count: 2, content_preview: 'Key research findings and observations from the latest study on document management systems.', content_text: '', error_message: '', user_id: '1', workspace_id: '3', folder_id: null, tags: [], created_at: new Date(Date.now() - 259200000).toISOString(), updated_at: new Date().toISOString(), processed_at: new Date().toISOString() },
+  ],
+  total: 4, page: 1, per_page: 20, pages: 1,
+};
+
+const MOCK_WORKSPACES_DOCS = {
+  workspaces: [
+    { id: '1', name: 'Reports', description: '', user_id: '1', document_count: 7, folder_count: 2, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: '2', name: 'Contracts', description: '', user_id: '1', document_count: 3, folder_count: 1, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: '3', name: 'Research', description: '', user_id: '1', document_count: 2, folder_count: 0, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  ],
+};
+
 function StatusBadge({ status }: { status: Document['status'] }) {
   const { isDark } = useTheme();
   const config = {
@@ -68,11 +86,13 @@ export default function DocumentsPage() {
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [expandedWorkspaces, setExpandedWorkspaces] = useState<Set<string>>(new Set());
+  const isDemo = localStorage.getItem('access_token') === 'demo-mock-token';
 
   // Fetch workspaces
   const { data: workspacesData } = useQuery({
     queryKey: ['workspaces'],
     queryFn: () => workspacesApi.list().then((r) => r.data),
+    enabled: !isDemo,
   });
 
   // Fetch folders for a workspace
@@ -86,19 +106,26 @@ export default function DocumentsPage() {
       }
       return folders;
     },
-    enabled: expandedWorkspaces.size > 0,
+    enabled: expandedWorkspaces.size > 0 && !isDemo,
   });
 
-  const { data, isLoading } = useQuery({
+  const { data: apiData, isLoading } = useQuery({
     queryKey: ['documents', page, selectedFolderId],
     queryFn: () => {
       const params: Record<string, any> = { page, per_page: 20 };
-      if (selectedFolderId) {
-        params.folder_id = selectedFolderId;
-      }
+      if (selectedFolderId) params.folder_id = selectedFolderId;
       return documentsApi.list(params).then((r) => r.data);
     },
+    enabled: !isDemo,
   });
+
+  const data = isDemo ? MOCK_DOCUMENTS : apiData;
+  const effectiveWorkspacesData = isDemo ? MOCK_WORKSPACES_DOCS : workspacesData;
+  const effectiveFoldersData = isDemo
+    ? Object.fromEntries([...expandedWorkspaces].map(wsId => [wsId, [
+      { id: wsId + '-1', name: 'Folder A', workspace_id: wsId, parent_id: null, document_count: 2, children_count: 0, created_at: new Date().toISOString() },
+    ]]))
+    : foldersData;
 
   const toggleWorkspace = (wsId: string) => {
     const newExpanded = new Set(expandedWorkspaces);
@@ -148,9 +175,10 @@ export default function DocumentsPage() {
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
+      if (isDemo) { toast('Demo mode — uploads are disabled'); return; }
       acceptedFiles.forEach((file) => uploadMutation.mutate(file));
     },
-    [uploadMutation]
+    [uploadMutation, isDemo]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -184,7 +212,7 @@ export default function DocumentsPage() {
             >
               All Documents
             </button>
-            {(workspacesData?.workspaces || []).map((ws: any) => (
+            {(effectiveWorkspacesData?.workspaces || []).map((ws: any) => (
               <div key={ws.id}>
                 <button
                   onClick={() => toggleWorkspace(ws.id)}
@@ -194,7 +222,7 @@ export default function DocumentsPage() {
                   <ChevronDown className={`w-4 h-4 transition-transform ${expandedWorkspaces.has(ws.id) ? 'rotate-0' : '-rotate-90'}`} />
                   {ws.name}
                 </button>
-                {expandedWorkspaces.has(ws.id) && (foldersData?.[ws.id] || []).map((folder: FolderType) => (
+                {expandedWorkspaces.has(ws.id) && (effectiveFoldersData?.[ws.id] || []).map((folder: FolderType) => (
                   <button
                     key={folder.id}
                     onClick={() => setSelectedFolderId(folder.id)}
@@ -234,7 +262,7 @@ export default function DocumentsPage() {
           </div>
 
           {/* Document List */}
-          {isLoading ? (
+          {!isDemo && isLoading ? (
             <div className="flex items-center justify-center h-32">
               <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
             </div>
