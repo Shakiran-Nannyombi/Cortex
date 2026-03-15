@@ -29,15 +29,15 @@ export default function LoginPage() {
   };
 
   const handleDemoLogin = async () => {
+    setLoading(true);
     try {
-      const response = await fetch('/api/auth/demo-login', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://cortex-nboq.onrender.com';
+      const response = await fetch(`${apiUrl}/api/auth/demo-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
 
-      if (!response.ok) {
-        throw new Error('Demo login failed');
-      }
+      if (!response.ok) throw new Error('Demo login failed');
 
       const data = await response.json();
       localStorage.setItem('access_token', data.access_token);
@@ -45,7 +45,20 @@ export default function LoginPage() {
       toast.success('Welcome to demo!');
       window.location.href = '/dashboard';
     } catch {
-      toast.error('Failed to load demo account');
+      // Fallback: use mock demo credentials when backend is unavailable
+      localStorage.setItem('access_token', 'demo-mock-token');
+      localStorage.setItem('refresh_token', 'demo-mock-refresh');
+      localStorage.setItem('demo_mode', 'true');
+      localStorage.setItem('demo_user', JSON.stringify({
+        id: 1,
+        email: 'demo@cortex.app',
+        full_name: 'Demo User',
+        username: 'demo'
+      }));
+      toast.success('Welcome to demo! (offline mode)');
+      window.location.href = '/dashboard';
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -186,8 +199,8 @@ export default function LoginPage() {
               type="button"
               onClick={handleDemoLogin}
               className={`w-full py-3 px-4 rounded-xl font-semibold transition-all duration-200 text-sm mt-2 ${isDark
-                  ? 'bg-gray-700 text-white hover:bg-gray-600'
-                  : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
+                ? 'bg-gray-700 text-white hover:bg-gray-600'
+                : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
                 }`}
             >
               Try Demo Account

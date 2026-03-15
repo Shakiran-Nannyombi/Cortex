@@ -10,11 +10,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const token = localStorage.getItem('access_token');
         if (token) {
+            // Check for demo mode first
+            const demoUser = localStorage.getItem('demo_user');
+            if (demoUser && token === 'demo-mock-token') {
+                setUser(JSON.parse(demoUser));
+                setIsLoading(false);
+                return;
+            }
+
             authApi.me()
                 .then((res) => setUser(res.data.user))
                 .catch(() => {
-                    localStorage.removeItem('access_token');
-                    localStorage.removeItem('refresh_token');
+                    // If API fails but we have demo mode, keep demo user
+                    const demoUserFallback = localStorage.getItem('demo_user');
+                    if (demoUserFallback) {
+                        setUser(JSON.parse(demoUserFallback));
+                    } else {
+                        localStorage.removeItem('access_token');
+                        localStorage.removeItem('refresh_token');
+                    }
                 })
                 .finally(() => setIsLoading(false));
         } else {
