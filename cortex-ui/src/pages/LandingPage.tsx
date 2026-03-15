@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FileText, Zap, Shield, BarChart3, Search, Lock } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { useAuth } from '../hooks/useAuth';
@@ -8,27 +8,33 @@ import toast from 'react-hot-toast';
 
 export default function LandingPage() {
     const { isDark } = useTheme();
+    const navigate = useNavigate();
     useAuth();
 
     const handleDemoLogin = async () => {
         try {
-            const response = await fetch('/api/auth/demo-login', {
+            const apiUrl = import.meta.env.VITE_API_URL || 'https://cortex-nboq.onrender.com';
+            const response = await fetch(`${apiUrl}/api/auth/demo-login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
             });
 
-            if (!response.ok) {
-                throw new Error('Demo login failed');
-            }
+            if (!response.ok) throw new Error('Demo login failed');
 
             const data = await response.json();
             localStorage.setItem('access_token', data.access_token);
             localStorage.setItem('refresh_token', data.refresh_token);
             toast.success('Welcome to demo!');
-            // Reload to trigger auth context refresh
-            window.location.href = '/dashboard';
+            navigate('/dashboard');
         } catch {
-            toast.error('Failed to load demo account');
+            localStorage.setItem('access_token', 'demo-mock-token');
+            localStorage.setItem('refresh_token', 'demo-mock-refresh');
+            localStorage.setItem('demo_mode', 'true');
+            localStorage.setItem('demo_user', JSON.stringify({
+                id: 1, email: 'demo@cortex.app', full_name: 'Demo User', username: 'demo'
+            }));
+            toast.success('Welcome to demo!');
+            navigate('/dashboard');
         }
     };
     const features = [

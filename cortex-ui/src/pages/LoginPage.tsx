@@ -43,7 +43,7 @@ export default function LoginPage() {
       localStorage.setItem('access_token', data.access_token);
       localStorage.setItem('refresh_token', data.refresh_token);
       toast.success('Welcome to demo!');
-      window.location.href = '/dashboard';
+      navigate('/dashboard');
     } catch {
       // Fallback: use mock demo credentials when backend is unavailable
       localStorage.setItem('access_token', 'demo-mock-token');
@@ -55,8 +55,8 @@ export default function LoginPage() {
         full_name: 'Demo User',
         username: 'demo'
       }));
-      toast.success('Welcome to demo! (offline mode)');
-      window.location.href = '/dashboard';
+      toast.success('Welcome to demo!');
+      navigate('/dashboard');
     } finally {
       setLoading(false);
     }
