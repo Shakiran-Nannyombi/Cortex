@@ -11,7 +11,6 @@ import {
   Loader2,
 } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
-import { useAuth } from '../hooks/useAuth';
 import type { Document } from '../types';
 
 const MOCK_DASHBOARD = {
@@ -51,7 +50,6 @@ function StatusIcon({ status }: { status: string }) {
 
 export default function DashboardPage() {
   const { isDark } = useTheme();
-  const { user } = useAuth();
   const isDemo = localStorage.getItem('access_token') === 'demo-mock-token';
 
   const { data: apiData, isLoading } = useQuery({
