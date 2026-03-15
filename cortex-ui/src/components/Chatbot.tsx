@@ -64,10 +64,31 @@ export default function Chatbot() {
                 if (!response.ok) throw new Error('API error');
                 data = await response.json();
             } catch {
-                // Fallback mock response when backend is unavailable
-                data = {
-                    message: `Thanks for your question! Cortex is a document management platform that helps you organize, process, and search through your documents using AI. The backend is currently starting up - please try again in a moment.`
-                };
+                // Smart fallback responses when backend is unavailable
+                const q = input.toLowerCase();
+                let reply = '';
+
+                if (q.includes('what') && (q.includes('cortex') || q.includes('app') || q.includes('this'))) {
+                    reply = 'Cortex is an AI-powered document management platform. You can upload documents (PDF, Word, images), extract text with OCR, search across all your files, and chat with your documents using AI.';
+                } else if (q.includes('how') && q.includes('use')) {
+                    reply = 'To use Cortex: 1) Create an account or try the demo. 2) Create a workspace. 3) Upload documents. 4) Use search to find content. 5) Chat with the AI to get insights from your documents.';
+                } else if (q.includes('feature') || q.includes('can it') || q.includes('what can')) {
+                    reply = 'Cortex features: OCR text extraction, full-text search, AI chat, document organization with workspaces and folders, tags, analytics, and API access.';
+                } else if (q.includes('demo') || q.includes('try')) {
+                    reply = 'You can try the demo by clicking "View Demo" on the home page. It logs you in automatically with sample documents and workspaces pre-loaded.';
+                } else if (q.includes('price') || q.includes('cost') || q.includes('free')) {
+                    reply = 'Cortex is currently free to use. Create an account to get started with full access to all features.';
+                } else if (q.includes('ocr') || q.includes('extract') || q.includes('scan')) {
+                    reply = 'Cortex uses OCR (Optical Character Recognition) to extract text from PDFs, images, and scanned documents, making them fully searchable.';
+                } else if (q.includes('search')) {
+                    reply = 'Cortex has full-text search across all your documents. Just type keywords in the search bar to find content across all your files instantly.';
+                } else if (q.includes('hello') || q.includes('hi') || q.includes('hey')) {
+                    reply = 'Hi! I\'m the Cortex assistant. Ask me anything about the app - features, how to use it, or what it can do for you.';
+                } else {
+                    reply = 'I can help you with questions about Cortex features, how to upload documents, search, OCR, or the demo account. What would you like to know?';
+                }
+
+                data = { message: reply };
             }
             const assistantMessage: Message = {
                 id: (Date.now() + 1).toString(),
