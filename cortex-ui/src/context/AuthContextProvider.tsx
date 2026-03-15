@@ -47,19 +47,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const demoLogin = async () => {
+        // Try backend first with short timeout, fall back to offline immediately
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000); // 3 second timeout
         try {
             const apiUrl = import.meta.env.VITE_API_URL || 'https://cortex-nboq.onrender.com';
             const response = await fetch(`${apiUrl}/api/auth/demo-login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                signal: controller.signal,
             });
+            clearTimeout(timeout);
             if (!response.ok) throw new Error('failed');
             const data = await response.json();
             localStorage.setItem('access_token', data.access_token);
             localStorage.setItem('refresh_token', data.refresh_token);
             setUser(data.user);
         } catch {
-            // Offline fallback
+            clearTimeout(timeout);
+            // Offline fallback - instant
             localStorage.setItem('access_token', 'demo-mock-token');
             localStorage.setItem('refresh_token', 'demo-mock-refresh');
             setUser(DEMO_USER);
