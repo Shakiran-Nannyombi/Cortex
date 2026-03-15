@@ -3,11 +3,14 @@ import { authApi } from '../api/endpoints';
 import type { User } from '../types';
 import { AuthContext } from './AuthContext';
 
-const DEMO_USER: User = {
+const DEMO_USER = {
     id: 1,
     email: 'demo@cortex.app',
     full_name: 'Demo User',
     username: 'demo',
+    is_active: true,
+    is_admin: false,
+    created_at: new Date().toISOString(),
 } as User;
 
 export function AuthProvider({ children }: { children: ReactNode }) {

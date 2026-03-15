@@ -4,7 +4,6 @@ import { useTheme } from '../hooks/useTheme';
 import { useAuth } from '../hooks/useAuth';
 import HeroSection from '../components/HeroSection';
 import Footer from '../components/Footer';
-import toast from 'react-hot-toast';
 
 export default function LandingPage() {
     const { isDark } = useTheme();
