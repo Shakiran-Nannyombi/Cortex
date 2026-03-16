@@ -1,13 +1,13 @@
 # Cortex
 
-A cloud-agnostic document processing platform (upload → OCR → search → organize). A production-ready, cloud-agnostic document processing application that can run on GCP, AWS, Azure, on-premises infrastructure, or locally with Docker Compose.
+A cloud-agnostic document processing platform (upload → OCR → search → organize). A flexible document processing application that can run locally with Docker Compose or on-premises infrastructure.
 
 ## Features
 
-- **Cloud Agnostic**: Deploy to GCP, AWS, Azure, or run locally without code changes
+- **Cloud Agnostic**: Run locally without code changes using standardized provider abstractions
 - **Full-Stack**: Modern React frontend with RESTful Flask backend
 - **Document Processing**: Automatic text extraction from PDF, DOCX, images, and text files
-- **OCR Support**: Extract text from images using Tesseract, Google Cloud Vision, AWS Textract, or Azure Computer Vision
+- **OCR Support**: Extract text from images using Tesseract or integrated Cloud OCR APIs
 - **Full-Text Search**: Search document content with PostgreSQL full-text search
 - **User Management**: Secure authentication with JWT tokens
 - **Workspaces & Folders**: Organize documents into workspaces and nested folders
@@ -24,7 +24,7 @@ Backend API (Flask + Python)
     ↓
 Provider Abstraction Layer
     ↓
-Cloud Services (GCP/AWS/Azure) or Local Services
+Cloud Services or Local Services
 ```
 
 ### Technology Stack
@@ -63,27 +63,12 @@ Try the app with pre-loaded demo data:
 
 Demo includes 2 workspaces, 3 folders, 6 sample documents, and 5 tags.
 
-## Deployment
-
-### Docker Deployment (Recommended for Demo)
-
-For complete Docker Compose setup with persistent volumes, see [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md).
-
-Quick start:
-```bash
-docker-compose up -d
-# Access at http://localhost:3000
-```
-
-### Heroku Deployment
-
-For Heroku deployment with cloud services, see [HEROKU_DEPLOYMENT.md](HEROKU_DEPLOYMENT.md).
 
 ## Quick Start
 
 ### Prerequisites
 
-- Docker and Docker Compose installed (for Docker deployment)
+- Docker and Docker Compose installed
 - Git installed
 - (Optional) Node.js 20+ and Python 3.11+ for local development
 
@@ -176,16 +161,6 @@ npm run dev
 | GET | `/api/analytics/dashboard` | Dashboard analytics |
 | GET | `/api/health` | Health check |
 
-## Cloud Provider Configuration
-
-Set environment variables to configure cloud providers:
-
-| Variable | Options | Default |
-|----------|---------|---------|
-| `CLOUD_PROVIDER` | `local`, `gcp`, `aws`, `azure` | `local` |
-| `OCR_PROVIDER` | `tesseract`, `gcp`, `aws`, `azure` | `tesseract` |
-| `STORAGE_PROVIDER` | `local`, `gcs`, `s3`, `azure_blob` | `local` |
-| `STORAGE_BUCKET` | Your bucket/container name | - |
 
 ## Testing
 
@@ -203,7 +178,7 @@ Cortex/
 │   ├── app/
 │   │   ├── api/          # REST API endpoints
 │   │   ├── models/       # SQLAlchemy models
-│   │   ├── providers/    # Cloud provider abstractions
+│   │   ├── providers/    # Provider abstractions (Cloud/Local)
 │   │   ├── services/     # Business logic
 │   │   ├── tasks/        # Celery async tasks
 │   │   └── utils/        # Utilities
